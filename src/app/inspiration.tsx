@@ -173,7 +173,7 @@ const InspirationScreen = () => {
   const handleMaybeLater = () => {
     if (isLoading) return
     // Use push instead of replace to avoid navigation stack issues
-    router.push('/(shop)/home')
+    router.push('/(shop)/')
   }
 
   const currentItem = inspirationData[currentIndex]

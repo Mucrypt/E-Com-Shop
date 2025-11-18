@@ -16,6 +16,7 @@ import { router } from 'expo-router'
 import { useCartStore } from '../../store'
 import { useAppToast, Header } from '../../components'
 import { useAuth } from '../../providers'
+import { useCategories } from '../../api/server/api'
 
 const { width } = Dimensions.get('window')
 
@@ -47,14 +48,7 @@ const bannerData = [
   },
 ]
 
-const categories = [
-  { id: '1', name: 'Electronics', icon: 'laptop', color: '#FF6B6B' },
-  { id: '2', name: 'Fashion', icon: 'shopping-bag', color: '#4ECDC4' },
-  { id: '3', name: 'Home', icon: 'home', color: '#45B7D1' },
-  { id: '4', name: 'Sports', icon: 'futbol-o', color: '#FFA726' },
-  { id: '5', name: 'Books', icon: 'book', color: '#AB47BC' },
-  { id: '6', name: 'Toys', icon: 'gamepad', color: '#26A69A' },
-]
+// ...existing code...
 
 const featuredProducts = [
   {
@@ -92,15 +86,10 @@ const featuredProducts = [
 const Home = () => {
   const [currentBanner, setCurrentBanner] = useState(0)
   const { addToCart } = useCartStore()
-  const {
-    showProductAddedToCart,
-    showLoadingToast,
-    hideLoadingToast,
-    showSuccessToast,
-    showErrorToast,
-    showInfoToast,
-  } = useAppToast()
+  const { toast } = useAppToast()
   const { user } = useAuth()
+
+  const { data: categories, error, isLoading } = useCategories()
 
   // Demo function to showcase world-class animations
   const demoAnimations = () => {
@@ -108,45 +97,39 @@ const Home = () => {
     const demoSequence = [
       {
         delay: 0,
-        action: () => showLoadingToast('Processing payment...'),
+        action: () => toast.show('Processing payment...', { type: 'info' }),
         name: 'Loading Animation',
       },
       {
         delay: 2000,
-        action: () => {
-          hideLoadingToast()
-          showSuccessToast('Payment Success!', 'Your order has been processed')
-        },
+        action: () =>
+          toast.show('Payment Success! Your order has been processed', {
+            type: 'success',
+          }),
         name: 'Success Toast',
       },
       {
         delay: 6000,
         action: () =>
-          showErrorToast({
-            title: 'Network Error',
-            message: 'Connection timeout. Please try again.',
+          toast.show('Network Error: Connection timeout. Please try again.', {
+            type: 'error',
           }),
         name: 'Error Toast',
       },
       {
         delay: 10000,
         action: () =>
-          showInfoToast({
-            title: 'New Update Available',
-            message: 'Version 2.0 is ready to download',
-            icon: 'download',
+          toast.show('New Update Available: Version 2.0 is ready to download', {
+            type: 'info',
           }),
         name: 'Info Toast',
       },
       {
         delay: 14000,
         action: () =>
-          showProductAddedToCart(
-            'Demo Product',
-            99.99,
-            2,
-            'https://via.placeholder.com/200x200/4ECDC4/fff?text=Demo'
-          ),
+          toast.show('Demo Product added to cart! (x2, $99.99)', {
+            type: 'success',
+          }),
         name: 'Cart Toast',
       },
     ]
@@ -179,8 +162,7 @@ const Home = () => {
         1
       )
 
-      // Enhanced toast with loading animation
-      showProductAddedToCart(product.name, product.price, 1, product.image)
+      toast.show(`${product.name} added to cart!`, { type: 'success' })
     } catch (error) {
       console.error('Add to cart error:', error)
       Alert.alert('Error', 'Failed to add item to cart. Please try again.', [
@@ -225,10 +207,15 @@ const Home = () => {
   const renderCategory = ({ item }: any) => (
     <TouchableOpacity
       style={styles.categoryItem}
-      onPress={() => router.push(`/categories/${item.name.toLowerCase()}`)}
+      onPress={() => router.push(`/categories/${item.slug}`)}
     >
-      <View style={[styles.categoryIcon, { backgroundColor: item.color }]}>
-        <FontAwesome name={item.icon} size={24} color='#fff' />
+      <View
+        style={[
+          styles.categoryIcon,
+          { backgroundColor: item.color || '#2E8C83' },
+        ]}
+      >
+        <FontAwesome name={item.icon || 'tag'} size={24} color='#fff' />
       </View>
       <Text style={styles.categoryName}>{item.name}</Text>
     </TouchableOpacity>
@@ -340,14 +327,22 @@ const Home = () => {
             <Text style={styles.seeAllText}>See All</Text>
           </TouchableOpacity>
         </View>
-        <FlatList
-          data={categories}
-          renderItem={renderCategory}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContainer}
-        />
+        {isLoading ? (
+          <Text style={{ marginLeft: 20 }}>Loading categories...</Text>
+        ) : error ? (
+          <Text style={{ marginLeft: 20, color: 'red' }}>
+            Error loading categories
+          </Text>
+        ) : (
+          <FlatList
+            data={categories}
+            renderItem={renderCategory}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoriesContainer}
+          />
+        )}
       </View>
 
       {/* Featured Products */}

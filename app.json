@@ -26,9 +26,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store"
-    ]
+    "plugins": ["expo-router", "expo-secure-store"],
+    "extra": {
+      "EXPO_PUBLIC_SUPABASE_URL": "https://fanfpoarmlkrwugzbrhl.supabase.co",
+      "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhbmZwb2FybWxrcnd1Z3picmhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MzY0NTcsImV4cCI6MjA3MDQxMjQ1N30.6LUMc2QcIHDTJ7cc2LnbzNj6JB9jp6YewuBAp2WWKW0"
+    }
   }
 }

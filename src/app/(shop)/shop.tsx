@@ -152,6 +152,9 @@ const products = [
 ]
 
 const Shop = () => {
+  // Cart logic
+  const { addToCart } = require('../../store/cartStore').useCartStore()
+  const { toast } = require('../../components/toast').useAppToast()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedSort, setSelectedSort] = useState('popular')
@@ -210,6 +213,24 @@ const Shop = () => {
   }
 
   const renderProductCard = ({ item }: { item: any }) => {
+    const handleAddToShippingBag = () => {
+      if (!item.inStock) return
+      const cartItem = {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        originalPrice: item.originalPrice,
+        color: 'Default',
+        size: 'Default',
+        image: 'default',
+        inStock: item.inStock,
+        category: item.category,
+        rating: item.rating,
+        estimatedDelivery: '2-3 days',
+      }
+      addToCart(cartItem, 1)
+      toast.show(`${item.name} added to shipping bag!`, { type: 'success' })
+    }
     const isFavorite = favorites.includes(item.id)
     const discountAmount = (
       ((item.originalPrice - item.price) / item.originalPrice) *
@@ -218,11 +239,11 @@ const Shop = () => {
 
     if (viewMode === 'list') {
       return (
-        <TouchableOpacity
-          style={styles.listProductCard}
-          onPress={() => router.push(`/product/${item.id}`)}
-        >
-          <View style={styles.listProductImage}>
+        <View style={styles.listProductCard}>
+          <TouchableOpacity
+            style={styles.listProductImage}
+            onPress={() => router.push(`/product/${item.id}`)}
+          >
             <FontAwesome name='image' size={40} color='#ccc' />
             {item.isNew && (
               <View style={styles.newBadgeList}>
@@ -234,7 +255,7 @@ const Shop = () => {
                 <Text style={styles.outOfStockText}>Out of Stock</Text>
               </View>
             )}
-          </View>
+          </TouchableOpacity>
 
           <View style={styles.listProductInfo}>
             <View style={styles.listProductHeader}>
@@ -280,17 +301,42 @@ const Shop = () => {
                 <Text style={styles.discountText}>{discountAmount}% OFF</Text>
               </View>
             </View>
+            <TouchableOpacity
+              style={[
+                styles.addToCartBtn,
+                !item.inStock && styles.disabledBtn,
+                { position: 'relative', marginTop: 8 },
+              ]}
+              disabled={!item.inStock}
+              onPress={handleAddToShippingBag}
+            >
+              <FontAwesome
+                name='shopping-bag'
+                size={14}
+                color={item.inStock ? '#2E8C83' : '#999'}
+              />
+              <Text
+                style={{
+                  marginLeft: 6,
+                  color: item.inStock ? '#2E8C83' : '#999',
+                  fontSize: 12,
+                  fontWeight: 'bold',
+                }}
+              >
+                Add to Bag
+              </Text>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
       )
     }
 
     return (
-      <TouchableOpacity
-        style={[styles.productCard, { width: itemWidth }]}
-        onPress={() => router.push(`/product/${item.id}`)}
-      >
-        <View style={styles.productImageContainer}>
+      <View style={[styles.productCard, { width: itemWidth }]}>
+        <TouchableOpacity
+          style={styles.productImageContainer}
+          onPress={() => router.push(`/product/${item.id}`)}
+        >
           <View style={styles.productImage}>
             <FontAwesome name='image' size={50} color='#ccc' />
           </View>
@@ -321,7 +367,7 @@ const Shop = () => {
               <Text style={styles.outOfStockText}>Out of Stock</Text>
             </View>
           )}
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.productInfo}>
           <Text style={styles.productName} numberOfLines={2}>
@@ -350,15 +396,26 @@ const Shop = () => {
           <TouchableOpacity
             style={[styles.addToCartBtn, !item.inStock && styles.disabledBtn]}
             disabled={!item.inStock}
+            onPress={handleAddToShippingBag}
           >
             <FontAwesome
-              name={item.inStock ? 'plus' : 'ban'}
-              size={12}
+              name='shopping-bag'
+              size={14}
               color={item.inStock ? '#2E8C83' : '#999'}
             />
+            <Text
+              style={{
+                marginLeft: 6,
+                color: item.inStock ? '#2E8C83' : '#999',
+                fontSize: 12,
+                fontWeight: 'bold',
+              }}
+            >
+              Add to Bag
+            </Text>
           </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     )
   }
 

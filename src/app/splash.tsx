@@ -101,7 +101,7 @@ const SplashScreen = () => {
 
       if (isAuthenticated) {
         // User has active session - go directly to home
-        router.replace('/(shop)/home')
+        router.replace('/(shop)/')
       } else {
         // User not authenticated - start onboarding flow
         router.replace('/start')

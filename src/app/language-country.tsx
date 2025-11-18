@@ -46,7 +46,7 @@ const LanguageCountryScreen = () => {
   const handleContinue = () => {
     // Here you would typically save the selection to storage/context
     // For now, just navigate to the main app
-    router.replace('/(shop)/home')
+    router.replace('/(shop)/')
   }
 
   const handleBack = () => {

@@ -1,0 +1,53 @@
+import { StyleSheet } from 'react-native'
+
+export const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  track: {
+    width: '100%',
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#e0e0e0',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  bufferedProgress: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    height: 6,
+    backgroundColor: '#b0b0b0',
+    borderRadius: 3,
+    zIndex: 1,
+  },
+  progress: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    height: 6,
+    backgroundColor: '#4F8EF7',
+    borderRadius: 3,
+    zIndex: 2,
+  },
+  thumb: {
+    position: 'absolute',
+    top: -6,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: '#4F8EF7',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+    zIndex: 3,
+  },
+})

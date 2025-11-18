@@ -143,7 +143,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   const fetchUserProfile = async (authUser: User) => {
     try {
-      // Fetch additional profile data from users table (not profiles)
       const { data: profile, error } = await supabase
         .from('users')
         .select('*')
@@ -154,9 +153,19 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         console.error('Error fetching user profile:', error)
       }
 
+      // Map nulls to undefined for type compatibility
+      const safeProfile = profile
+        ? Object.fromEntries(
+            Object.entries(profile).map(([key, value]) => [
+              key,
+              value === null ? undefined : value,
+            ])
+          )
+        : {}
+
       const enhancedUser: AuthUser = {
         ...authUser,
-        profile: profile || {},
+        profile: safeProfile,
       }
 
       setUser(enhancedUser)
@@ -192,9 +201,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         },
       })
 
-      // If sign up successful and user is confirmed, create profile
+      // If sign up successful, upsert profile info
+      if (!error && data.user) {
+        await supabase.from('users').upsert({
+          id: data.user.id,
+          username: fullName,
+          avatar_url: 'https://randomuser.me/api/portraits/lego/1.jpg', // default avatar
+          updated_at: new Date().toISOString(),
+        })
+      }
+
+      // If user needs to confirm email
       if (!error && data.user && !data.user.email_confirmed_at) {
-        // User needs to confirm email
         console.log('Please check your email for confirmation link')
       }
 

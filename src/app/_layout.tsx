@@ -2,6 +2,8 @@ import { Stack } from 'expo-router'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { AppProviders } from '../providers'
+import QueryProvider from '../providers/tanstack-api/query-providers'
+import { AuthProvider } from '../contexts/AuthContext'
 
 // Custom header component for Mukulah logo
 const MukulahHeader = () => {
@@ -19,58 +21,71 @@ const MukulahHeader = () => {
 
 export default function RootLayout() {
   return (
-    <AppProviders>
-      <Stack>
-        <Stack.Screen name='splash' options={{ headerShown: false }} />
-        <Stack.Screen name='start' options={{ headerShown: false }} />
-        <Stack.Screen
-          name='language-country'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name='privacy-policy' options={{ headerShown: false }} />
-        <Stack.Screen name='inspiration' options={{ headerShown: false }} />
-
-        <Stack.Screen
-          name='(shop)'
-          options={{
-            headerShown: true,
-            headerTitle: () => <MukulahHeader />,
-            headerStyle: {
-              backgroundColor: '#2E8C83',
-            },
-            headerTitleAlign: 'center',
-            headerShadowVisible: true,
-          }}
-        />
-
-        <Stack.Screen
-          name='auth'
-          options={{ title: 'Authentication', headerShown: true }}
-        />
-        <Stack.Screen
-          name='categories'
-          options={{ title: 'Categories', headerShown: false }}
-        />
-        <Stack.Screen
-          name='product'
-          options={{ title: 'Product Details', headerShown: false }}
-        />
-        <Stack.Screen
-          name='+not-found'
-          options={{
-            title: 'Not Found',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#2E8C83',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        />
-      </Stack>
-    </AppProviders>
+    <QueryProvider>
+      <AppProviders>
+        <AuthProvider>
+          <Stack>
+            <Stack.Screen name='splash' options={{ headerShown: false }} />
+            <Stack.Screen name='start' options={{ headerShown: false }} />
+            <Stack.Screen
+              name='language-country'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='privacy-policy'
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name='inspiration' options={{ headerShown: false }} />
+            <Stack.Screen
+              name='(shop)'
+              options={{
+                headerShown: true,
+                headerTitle: () => <MukulahHeader />,
+                headerStyle: {
+                  backgroundColor: '#2E8C83',
+                },
+                headerTitleAlign: 'center',
+                headerShadowVisible: true,
+              }}
+            />
+            {/* ADD THIS LINE FOR MEDIA SCREEN */}
+            <Stack.Screen
+              name='(media)'
+              options={{
+                headerShown: false,
+                presentation: 'modal', // Optional: makes it open as a modal
+              }}
+            />
+            <Stack.Screen
+              name='auth'
+              options={{ title: 'Authentication', headerShown: true }}
+            />
+            <Stack.Screen
+              name='categories'
+              options={{ title: 'Categories', headerShown: false }}
+            />
+            <Stack.Screen
+              name='product'
+              options={{ title: 'Product Details', headerShown: false }}
+            />
+            <Stack.Screen
+              name='+not-found'
+              options={{
+                title: 'Not Found',
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: '#2E8C83',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+          </Stack>
+        </AuthProvider>
+      </AppProviders>
+    </QueryProvider>
   )
 }
 

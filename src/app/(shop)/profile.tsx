@@ -541,6 +541,24 @@ const Profile = () => {
         )}
 
         <StatusBar style='auto' />
+
+        {/* Link to Media Screen */}
+        <TouchableOpacity
+          style={{
+            marginTop: 10,
+            padding: 16,
+            backgroundColor: '#2E8C83',
+            borderRadius: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onPress={() => router.push('/(media)')}
+        >
+          <FontAwesome name='image' size={20} color='#fff' />
+          <Text style={{ color: '#fff', fontWeight: 'bold', marginTop: 6 }}>
+            Go to Media
+          </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   )

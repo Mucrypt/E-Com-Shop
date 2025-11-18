@@ -8,7 +8,9 @@ import {
   TextInput,
   Modal,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import React, { useState } from 'react'
 import { useLocalSearchParams, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -18,110 +20,8 @@ const { width } = Dimensions.get('window')
 const numColumns = 2
 const itemWidth = (width - 60) / numColumns
 
-// Enhanced mock data for category products
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Wireless Bluetooth Headphones',
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.8,
-    reviews: 324,
-    discount: 20,
-    isNew: false,
-    isFavorite: false,
-    inStock: true,
-    brand: 'AudioTech',
-    image: 'headphones',
-  },
-  {
-    id: '2',
-    name: 'Smart Fitness Watch Pro',
-    price: 299.99,
-    originalPrice: 399.99,
-    rating: 4.9,
-    reviews: 189,
-    discount: 25,
-    isNew: true,
-    isFavorite: true,
-    inStock: true,
-    brand: 'FitTech',
-    image: 'watch',
-  },
-  {
-    id: '3',
-    name: 'Gaming Mechanical Keyboard RGB',
-    price: 149.99,
-    originalPrice: 199.99,
-    rating: 4.7,
-    reviews: 567,
-    discount: 25,
-    isNew: false,
-    isFavorite: false,
-    inStock: true,
-    brand: 'GamePro',
-    image: 'keyboard',
-  },
-  {
-    id: '4',
-    name: 'Ultra HD 4K Webcam',
-    price: 89.99,
-    originalPrice: 129.99,
-    rating: 4.6,
-    reviews: 143,
-    discount: 31,
-    isNew: false,
-    isFavorite: true,
-    inStock: false,
-    brand: 'VisionPro',
-    image: 'webcam',
-  },
-  {
-    id: '5',
-    name: 'Portable Power Bank 20000mAh',
-    price: 49.99,
-    originalPrice: 69.99,
-    rating: 4.5,
-    reviews: 234,
-    discount: 29,
-    isNew: true,
-    isFavorite: false,
-    inStock: true,
-    brand: 'PowerMax',
-    image: 'power-bank',
-  },
-  {
-    id: '6',
-    name: 'Wireless Charging Pad',
-    price: 29.99,
-    originalPrice: 39.99,
-    rating: 4.3,
-    reviews: 156,
-    discount: 25,
-    isNew: false,
-    isFavorite: false,
-    inStock: true,
-    brand: 'ChargeFast',
-    image: 'charger',
-  },
-]
-
-const sortOptions = [
-  { id: 'featured', name: 'Featured', icon: 'star' as const },
-  { id: 'newest', name: 'Newest First', icon: 'clock-o' as const },
-  {
-    id: 'price-low',
-    name: 'Price: Low to High',
-    icon: 'sort-amount-asc' as const,
-  },
-  {
-    id: 'price-high',
-    name: 'Price: High to Low',
-    icon: 'sort-amount-desc' as const,
-  },
-  { id: 'rating', name: 'Customer Rating', icon: 'star' as const },
-  { id: 'discount', name: 'Highest Discount', icon: 'percent' as const },
-]
+import { useCategoryProducts, useCategoryBySlug } from '../../api/server/api'
+import { useSortOptions } from '../../api/server/useSortOptions'
 
 const CategorySlug = () => {
   const { slug } = useLocalSearchParams()
@@ -129,17 +29,38 @@ const CategorySlug = () => {
   const [selectedSort, setSelectedSort] = useState('featured')
   const [showSortModal, setShowSortModal] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [favorites, setFavorites] = useState<string[]>(
-    mockProducts.filter((p) => p.isFavorite).map((p) => p.id)
-  )
+  const [favorites, setFavorites] = useState<string[]>([])
 
-  // Format the category name from slug
+  // Fetch sort options from database
+  const {
+    data: sortOptions = [],
+    isLoading: sortLoading,
+    error: sortError,
+  } = useSortOptions()
+
+  // Fetch category by slug
+  const {
+    data: category,
+    isLoading: categoryLoading,
+    error: categoryError,
+  } = useCategoryBySlug(slug as string)
+
+  // Fetch products by category ID
+  const {
+    data: products = [],
+    isLoading: productsLoading,
+    error: productsError,
+  } = useCategoryProducts(category?.id ?? '')
+
+  // Format the category name from slug or category
   const categoryName =
-    typeof slug === 'string'
+    category?.name ||
+    (typeof slug === 'string'
       ? slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ')
-      : 'Category'
+      : 'Category')
 
-  const filteredProducts = mockProducts.filter((product) =>
+  // Filter products by search query
+  const filteredProducts = products.filter((product: any) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -214,21 +135,24 @@ const CategorySlug = () => {
             </View>
 
             <View style={styles.listPriceContainer}>
-              <View>
-                <Text style={styles.listPrice}>${item.price}</Text>
+              <Text style={styles.listPrice}>${item.price.toFixed(2)}</Text>
+              {item.originalPrice > item.price && (
                 <Text style={styles.listOriginalPrice}>
-                  ${item.originalPrice}
+                  ${item.originalPrice.toFixed(2)}
                 </Text>
-              </View>
-              <View style={styles.discountBadgeList}>
-                <Text style={styles.discountText}>{discountAmount}% OFF</Text>
-              </View>
+              )}
+              {item.originalPrice > item.price && (
+                <View style={styles.discountBadgeList}>
+                  <Text style={styles.discountText}>-{discountAmount}%</Text>
+                </View>
+              )}
             </View>
           </View>
         </TouchableOpacity>
       )
     }
 
+    // Grid view
     return (
       <TouchableOpacity
         style={[styles.productCard, { width: itemWidth }]}
@@ -236,35 +160,33 @@ const CategorySlug = () => {
       >
         <View style={styles.productImageContainer}>
           <View style={styles.productImage}>
-            <FontAwesome name='image' size={50} color='#ccc' />
+            <FontAwesome name='image' size={40} color='#ccc' />
+            {item.isNew && (
+              <View style={styles.newBadge}>
+                <Text style={styles.newBadgeText}>NEW</Text>
+              </View>
+            )}
+            {item.originalPrice > item.price && (
+              <View style={styles.discountBadge}>
+                <Text style={styles.discountText}>-{discountAmount}%</Text>
+              </View>
+            )}
+            {!item.inStock && (
+              <View style={styles.outOfStockOverlay}>
+                <Text style={styles.outOfStockText}>Out of Stock</Text>
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.favoriteBtn}
+              onPress={() => toggleFavorite(item.id)}
+            >
+              <FontAwesome
+                name={isFavorite ? 'heart' : 'heart-o'}
+                size={16}
+                color={isFavorite ? '#ff4444' : '#999'}
+              />
+            </TouchableOpacity>
           </View>
-
-          {item.isNew && (
-            <View style={styles.newBadge}>
-              <Text style={styles.newBadgeText}>NEW</Text>
-            </View>
-          )}
-
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{discountAmount}% OFF</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.favoriteBtn}
-            onPress={() => toggleFavorite(item.id)}
-          >
-            <FontAwesome
-              name={isFavorite ? 'heart' : 'heart-o'}
-              size={16}
-              color={isFavorite ? '#ff4444' : '#999'}
-            />
-          </TouchableOpacity>
-
-          {!item.inStock && (
-            <View style={styles.outOfStockOverlay}>
-              <Text style={styles.outOfStockText}>Out of Stock</Text>
-            </View>
-          )}
         </View>
 
         <View style={styles.productInfo}>
@@ -272,7 +194,6 @@ const CategorySlug = () => {
           <Text style={styles.productName} numberOfLines={2}>
             {item.name}
           </Text>
-
           <View style={styles.ratingContainer}>
             <View style={styles.stars}>
               {[1, 2, 3, 4, 5].map((star) => (
@@ -286,19 +207,21 @@ const CategorySlug = () => {
             </View>
             <Text style={styles.reviewCount}>({item.reviews})</Text>
           </View>
-
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>${item.price}</Text>
-            <Text style={styles.originalPrice}>${item.originalPrice}</Text>
+            <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+            {item.originalPrice > item.price && (
+              <Text style={styles.originalPrice}>
+                ${item.originalPrice.toFixed(2)}
+              </Text>
+            )}
           </View>
-
           <TouchableOpacity
             style={[styles.addToCartBtn, !item.inStock && styles.disabledBtn]}
             disabled={!item.inStock}
           >
             <FontAwesome
-              name={item.inStock ? 'plus' : 'ban'}
-              size={12}
+              name='shopping-cart'
+              size={16}
               color={item.inStock ? '#2E8C83' : '#999'}
             />
           </TouchableOpacity>
@@ -323,43 +246,54 @@ const CategorySlug = () => {
             </TouchableOpacity>
           </View>
 
-          {sortOptions.map((option) => (
-            <TouchableOpacity
-              key={option.id}
-              style={[
-                styles.sortOption,
-                selectedSort === option.id && styles.selectedSortOption,
-              ]}
-              onPress={() => {
-                setSelectedSort(option.id)
-                setShowSortModal(false)
-              }}
-            >
-              <FontAwesome
-                name={option.icon}
-                size={16}
-                color={selectedSort === option.id ? '#2E8C83' : '#666'}
-              />
-              <Text
+          {sortLoading ? (
+            <ActivityIndicator
+              size='small'
+              color='#2E8C83'
+              style={styles.loadingIndicator}
+            />
+          ) : sortError ? (
+            <Text style={styles.errorText}>Error loading sort options</Text>
+          ) : (
+            sortOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
                 style={[
-                  styles.sortOptionText,
-                  selectedSort === option.id && styles.selectedSortText,
+                  styles.sortOption,
+                  selectedSort === option.id ? styles.selectedSortOption : null,
                 ]}
+                onPress={() => {
+                  setSelectedSort(option.id)
+                  setShowSortModal(false)
+                }}
               >
-                {option.name}
-              </Text>
-              {selectedSort === option.id && (
-                <FontAwesome name='check' size={16} color='#2E8C83' />
-              )}
-            </TouchableOpacity>
-          ))}
+                <FontAwesome
+                  name={option.icon as any}
+                  size={16}
+                  color={selectedSort === option.id ? '#2E8C83' : '#666'}
+                />
+                <Text
+                  style={[
+                    styles.sortOptionText,
+                    selectedSort === option.id ? styles.selectedSortText : null,
+                  ]}
+                >
+                  {option.name}
+                </Text>
+                {selectedSort === option.id && (
+                  <FontAwesome name='check' size={16} color='#2E8C83' />
+                )}
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </View>
     </Modal>
   )
 
+  // ADD THE RETURN STATEMENT HERE
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>{categoryName}</Text>
@@ -368,86 +302,108 @@ const CategorySlug = () => {
         </Text>
       </View>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <FontAwesome name='search' size={16} color='#999' />
-          <TextInput
-            style={styles.searchInput}
-            placeholder={`Search in ${categoryName}...`}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor='#999'
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <FontAwesome name='times-circle' size={16} color='#999' />
+      {/* Loading/Error States */}
+      {categoryLoading || productsLoading ? (
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size='large' color='#2E8C83' />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : categoryError ? (
+        <View style={styles.centerContainer}>
+          <FontAwesome name='exclamation-triangle' size={40} color='red' />
+          <Text style={styles.errorText}>Error loading category</Text>
+        </View>
+      ) : productsError ? (
+        <View style={styles.centerContainer}>
+          <FontAwesome name='exclamation-triangle' size={40} color='red' />
+          <Text style={styles.errorText}>Error loading products</Text>
+        </View>
+      ) : (
+        <>
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBar}>
+              <FontAwesome name='search' size={16} color='#999' />
+              <TextInput
+                style={styles.searchInput}
+                placeholder={`Search in ${categoryName}...`}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholderTextColor='#999'
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchQuery('')}>
+                  <FontAwesome name='times-circle' size={16} color='#999' />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* Controls */}
+          <View style={styles.controlsContainer}>
+            <TouchableOpacity
+              style={styles.sortButton}
+              onPress={() => setShowSortModal(true)}
+            >
+              <FontAwesome name='sort' size={16} color='#2E8C83' />
+              <Text style={styles.sortButtonText}>Sort</Text>
             </TouchableOpacity>
-          )}
-        </View>
-      </View>
 
-      {/* Controls */}
-      <View style={styles.controlsContainer}>
-        <TouchableOpacity
-          style={styles.sortButton}
-          onPress={() => setShowSortModal(true)}
-        >
-          <FontAwesome name='sort' size={16} color='#2E8C83' />
-          <Text style={styles.sortButtonText}>Sort</Text>
-        </TouchableOpacity>
+            <View style={styles.viewToggle}>
+              <TouchableOpacity
+                style={[
+                  styles.viewButton,
+                  viewMode === 'grid' ? styles.activeViewButton : null,
+                ]}
+                onPress={() => setViewMode('grid')}
+              >
+                <FontAwesome
+                  name='th'
+                  size={16}
+                  color={viewMode === 'grid' ? '#2E8C83' : '#666'}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.viewButton,
+                  viewMode === 'list' ? styles.activeViewButton : null,
+                ]}
+                onPress={() => setViewMode('list')}
+              >
+                <FontAwesome
+                  name='list'
+                  size={16}
+                  color={viewMode === 'list' ? '#2E8C83' : '#666'}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        <View style={styles.viewToggle}>
-          <TouchableOpacity
-            style={[
-              styles.viewButton,
-              viewMode === 'grid' && styles.activeViewButton,
+          {/* Products */}
+          <FlatList
+            data={filteredProducts}
+            renderItem={renderProduct}
+            keyExtractor={(item) => item.id}
+            numColumns={viewMode === 'grid' ? numColumns : 1}
+            key={viewMode}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[
+              styles.productsList,
+              viewMode === 'list' ? styles.listView : null,
             ]}
-            onPress={() => setViewMode('grid')}
-          >
-            <FontAwesome
-              name='th'
-              size={16}
-              color={viewMode === 'grid' ? '#2E8C83' : '#666'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.viewButton,
-              viewMode === 'list' && styles.activeViewButton,
-            ]}
-            onPress={() => setViewMode('list')}
-          >
-            <FontAwesome
-              name='list'
-              size={16}
-              color={viewMode === 'list' ? '#2E8C83' : '#666'}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Products */}
-      <FlatList
-        data={filteredProducts}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        numColumns={viewMode === 'grid' ? numColumns : 1}
-        key={viewMode}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.productsList,
-          viewMode === 'list' && styles.listView,
-        ]}
-        columnWrapperStyle={viewMode === 'grid' ? styles.productRow : undefined}
-      />
-
-      {renderSortModal()}
+            columnWrapperStyle={
+              viewMode === 'grid' ? styles.productRow : undefined
+            }
+          />
+          {renderSortModal()}
+        </>
+      )}
       <StatusBar style='auto' />
-    </View>
+    </SafeAreaView>
   )
 }
 
+// Your styles remain the same...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -501,7 +457,7 @@ const styles = StyleSheet.create({
   sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'red',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -774,7 +730,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'red',
   },
   sortOption: {
     flexDirection: 'row',
@@ -796,6 +752,26 @@ const styles = StyleSheet.create({
   selectedSortText: {
     color: '#2E8C83',
     fontWeight: '600',
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+  },
+  loadingIndicator: {
+    marginVertical: 20,
   },
 })
 

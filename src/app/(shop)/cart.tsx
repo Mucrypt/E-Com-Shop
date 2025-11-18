@@ -43,8 +43,7 @@ const Cart = () => {
   const updateCartQuantity = useCartStore((state) => state.updateQuantity)
   const removeFromCart = useCartStore((state) => state.removeFromCart)
   const clearCart = useCartStore((state) => state.clearCart)
-  const { showProductRemovedFromCart, showCartCleared, showSuccessToast } =
-    useAppToast()
+  const { toast } = useAppToast()
   const [selectedItems, setSelectedItems] = useState<string[]>([])
 
   // Update selected items when cart items change
@@ -76,6 +75,9 @@ const Cart = () => {
     if (currentItem) {
       const newQuantity = Math.max(1, currentItem.quantity + change)
       updateCartQuantity(id, newQuantity)
+      if (change > 0) {
+        toast.show(`${currentItem.name} added to cart!`, { type: 'success' })
+      }
     }
   }
 
@@ -97,7 +99,9 @@ const Cart = () => {
 
             // Show toast notification
             if (itemToRemove) {
-              showProductRemovedFromCart(itemToRemove.name)
+              toast.show(`${itemToRemove.name} removed from cart.`, {
+                type: 'danger',
+              })
             }
           },
         },
@@ -146,6 +150,18 @@ const Cart = () => {
     )
   }
 
+  /**
+   * Renders a single cart item component for the shopping cart.
+   *
+   * @param item - An object representing a cart item, including its id, name, price, original price, color, size, quantity, and stock status.
+   * @returns A React element displaying the cart item's details, including selection checkbox, product image, name, variant, price, discount, quantity controls, and remove button.
+   *
+   * - The selection checkbox is disabled if the item is out of stock.
+   * - Displays a discount badge calculated from the original and current price.
+   * - Quantity controls allow incrementing or decrementing the item's quantity, disabled if out of stock.
+   * - Shows an "Out of Stock" label if the item is not available.
+   * - Provides a button to remove the item from the cart.
+   */
   const renderCartItem = ({ item }: { item: (typeof cartItems)[0] }) => {
     const isSelected = selectedItems.includes(item.id)
     const discount = (
@@ -182,8 +198,8 @@ const Cart = () => {
           </Text>
 
           <View style={styles.priceContainer}>
-            <Text style={styles.price}>${item.price}</Text>
-            <Text style={styles.originalPrice}>${item.originalPrice}</Text>
+            <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+            <Text style={styles.originalPrice}>${item.originalPrice.toFixed(2)}</Text>
             <View style={styles.discountBadge}>
               <Text style={styles.discountText}>{discount}% OFF</Text>
             </View>
@@ -498,22 +514,24 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   summaryContainer: {
-    padding: 20,
+    padding: 5,
     backgroundColor: '#f9f9f9',
     borderTopWidth: 1,
     borderTopColor: '#f0f0f0',
+    marginHorizontal: 10,
+    borderRadius: 8,
   },
   summaryTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
   },
   summaryLabel: {
     fontSize: 16,
@@ -534,7 +552,7 @@ const styles = StyleSheet.create({
   summaryDivider: {
     height: 1,
     backgroundColor: '#ddd',
-    marginVertical: 15,
+    marginVertical: 8,
   },
   totalLabel: {
     fontSize: 18,

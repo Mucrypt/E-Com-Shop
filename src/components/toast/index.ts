@@ -1,5 +1,5 @@
 // Toast components and services
-export { CartSuccessToast, ErrorToast, InfoToast } from './CustomToasts'
+// CustomToasts exports removed
 export { useAppToast } from './ToastService'
 export type {
   CartToastData,

@@ -63,7 +63,7 @@ const getProductBySlug = (slug: string) => {
 const ProductSlug = () => {
   const { slug } = useLocalSearchParams()
   const addToCart = useCartStore((state) => state.addToCart)
-  const { showCartSuccessToast } = useAppToast()
+  const { toast } = useAppToast()
   const product = getProductBySlug(
     typeof slug === 'string' ? slug : 'wireless-headphones'
   )
@@ -87,13 +87,7 @@ const ProductSlug = () => {
     }
 
     addToCart(cartItem, quantity)
-
-    // Show beautiful toast notification
-    showCartSuccessToast({
-      productName: product.name,
-      productPrice: product.price,
-      quantity: quantity,
-    })
+    toast.show(`${product.name} added to cart!`, { type: 'success' })
   }
 
   const handleBuyNow = () => {

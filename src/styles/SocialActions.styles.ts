@@ -1,0 +1,51 @@
+import { StyleSheet } from 'react-native'
+
+export const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingVertical: 8,
+    paddingHorizontal: 0,
+    flex: 1,
+  },
+  actionGroup: {
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  actionButton: {
+    backgroundColor: 'rgba(0,0,0,0.18)',
+    borderRadius: 24,
+    padding: 8,
+    marginBottom: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionCount: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+    marginTop: 2,
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  musicDisc: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#2E8C83',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+})
