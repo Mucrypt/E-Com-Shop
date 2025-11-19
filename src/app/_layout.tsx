@@ -1,19 +1,68 @@
-import { Stack } from 'expo-router'
+// app/_layout.tsx
+import React from 'react'
+import { Stack, useRouter } from 'expo-router'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { AppProviders } from '../providers'
 import QueryProvider from '../providers/tanstack-api/query-providers'
 import { AuthProvider } from '../contexts/AuthContext'
+import { useCartStore } from '../store'
+import { SidebarProvider, useSidebar } from '../contexts/SidebarContext'
 
-// Custom header component for Mukulah logo
-const MukulahHeader = () => {
+const MukulahHeader: React.FC = () => {
+  const router = useRouter()
+  const cartCount = useCartStore((state) => state.cartItems.length)
+  const { toggle } = useSidebar()
+
+  const goToCart = () => {
+    router.push('/(shop)/cart')
+  }
+
+  const goToProfile = () => {
+    router.push('/(shop)/profile')
+  }
+
+  const goToFavorites = () => {
+    router.push('/(shop)/favorites')
+  }
+
+  const goToShop = () => {
+    router.push('/(shop)/shop')
+  }
+
   return (
     <View style={styles.headerContainer}>
+      {/* Left: SHEIN-style menu button */}
+      <TouchableOpacity style={styles.leftIconButton} onPress={toggle}>
+        <FontAwesome name='bars' size={20} color='#111' />
+      </TouchableOpacity>
+
+      {/* Center logo */}
       <View style={styles.logoContainer}>
-        <View style={styles.logoIcon}>
-          <FontAwesome name='shopping-bag' size={24} color='#fff' />
-        </View>
-        <Text style={styles.logoText}>Mukulah</Text>
+        <Text style={styles.logoText}>MUKULAH</Text>
+      </View>
+
+      {/* Right icons: search, heart, cart */}
+      <View style={styles.rightIcons}>
+        {/* Replace search with profile icon */}
+        <TouchableOpacity style={styles.iconButton} onPress={goToProfile}>
+          <FontAwesome name='user' size={20} color='#111' />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.iconButton} onPress={goToFavorites}>
+          <FontAwesome name='heart-o' size={20} color='#111' />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cartButton} onPress={goToCart}>
+          <FontAwesome name='shopping-cart' size={20} color='#111' />
+          {cartCount > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>
+                {cartCount > 99 ? '99+' : cartCount}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
     </View>
   )
@@ -22,121 +71,121 @@ const MukulahHeader = () => {
 export default function RootLayout() {
   return (
     <QueryProvider>
-      <AppProviders>
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name='splash' options={{ headerShown: false }} />
-            <Stack.Screen name='start' options={{ headerShown: false }} />
-            <Stack.Screen
-              name='language-country'
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name='privacy-policy'
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name='inspiration' options={{ headerShown: false }} />
-            <Stack.Screen
-              name='(shop)'
-              options={{
-                headerShown: true,
-                headerTitle: () => <MukulahHeader />,
-                headerStyle: {
-                  backgroundColor: '#2E8C83',
-                },
-                headerTitleAlign: 'center',
-                headerShadowVisible: true,
-              }}
-            />
-            {/* ADD THIS LINE FOR MEDIA SCREEN */}
-            <Stack.Screen
-              name='(media)'
-              options={{
-                headerShown: false,
-                presentation: 'modal', // Optional: makes it open as a modal
-              }}
-            />
-            <Stack.Screen
-              name='auth'
-              options={{ title: 'Authentication', headerShown: true }}
-            />
-            <Stack.Screen
-              name='categories'
-              options={{ title: 'Categories', headerShown: false }}
-            />
-            <Stack.Screen
-              name='product'
-              options={{ title: 'Product Details', headerShown: false }}
-            />
-            <Stack.Screen
-              name='+not-found'
-              options={{
-                title: 'Not Found',
-                headerShown: true,
-                headerStyle: {
-                  backgroundColor: '#2E8C83',
-                },
-                headerTintColor: '#fff',
-                headerTitleStyle: {
-                  fontWeight: 'bold',
-                },
-              }}
-            />
-          </Stack>
-        </AuthProvider>
-      </AppProviders>
+      <SidebarProvider>
+        <AppProviders>
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name='splash' options={{ headerShown: false }} />
+              <Stack.Screen name='start' options={{ headerShown: false }} />
+              <Stack.Screen
+                name='language-country'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='privacy-policy'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name='inspiration'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(shop)'
+                options={{
+                    headerShown: true,
+                    headerTitle: () => <MukulahHeader />,
+                    headerStyle: { backgroundColor: '#ffffff' },
+                    headerTitleAlign: 'center',
+                    headerShadowVisible: true,
+                    headerBackVisible: false,
+                    headerLeft: () => null,
+                }}
+              />
+
+              <Stack.Screen
+                name='(media)'
+                options={{ headerShown: false, presentation: 'modal' }}
+              />
+
+              <Stack.Screen
+                name='auth'
+                options={{ title: 'Authentication', headerShown: true }}
+              />
+              <Stack.Screen
+                name='categories'
+                options={{ title: 'Categories', headerShown: false }}
+              />
+              <Stack.Screen
+                name='product'
+                options={{ title: 'Product Details', headerShown: false }}
+              />
+              <Stack.Screen
+                name='+not-found'
+                options={{
+                  title: 'Not Found',
+                  headerShown: true,
+                  headerStyle: { backgroundColor: '#2E8C83' },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: { fontWeight: 'bold' },
+                }}
+              />
+            </Stack>
+          </AuthProvider>
+        </AppProviders>
+      </SidebarProvider>
     </QueryProvider>
   )
 }
 
 const styles = StyleSheet.create({
   headerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
-  logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#ffffff',
   },
-  logoIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  leftIconButton: {
+    padding: 6,
+  },
+  logoContainer: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
   },
   logoText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 1,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    fontSize: 22,
+    fontWeight: '700',
+    letterSpacing: 3,
+    color: '#111111',
   },
-  notificationDot: {
+  rightIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+  },
+  cartButton: {
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+  },
+  cartBadge: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    width: 8,
-    height: 8,
-    backgroundColor: '#ff4444',
-    borderRadius: 4,
+    top: 0,
+    right: 0,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#bf0e40ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  cartBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
   },
 })
