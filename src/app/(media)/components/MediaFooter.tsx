@@ -74,7 +74,7 @@ const MediaFooter: React.FC<MediaFooterProps> = ({
 
       <TouchableOpacity
         style={styles.footerButton}
-        onPress={() => router.push('/(shop)/cart')}
+        onPress={() => router.push('/cart')}
       >
         <Ionicons name='cart-outline' size={24} color='#999' />
         <Text style={styles.footerButtonText}>Cart</Text>

@@ -130,7 +130,7 @@ const Profile = () => {
         Alert.alert('Edit Profile', 'This would open the edit profile screen.')
         break
       case 'orders':
-        router.push('/(shop)/orders')
+        router.push('/orders')
         break
       case 'addresses':
         Alert.alert(

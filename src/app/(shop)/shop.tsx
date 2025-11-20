@@ -1,735 +1,921 @@
+// app/(shop)/shop.tsx
+import React, { useState } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  FlatList,
-  TextInput,
   Dimensions,
-  Modal,
   Image,
+  ActivityIndicator,
 } from 'react-native'
-import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { FontAwesome } from '@expo/vector-icons'
 import { router } from 'expo-router'
+
+import {
+  useCategories,
+  useSaleProducts,
+  useFeaturedProducts,
+  useProducts,
+} from '../../api/server/api'
 import { Header } from '../../components'
+import FloatingSearchBar from '../../components/layout/FloatingSearchBar'
+
+
 
 const { width } = Dimensions.get('window')
-const numColumns = 2
-const horizontalPadding = 16
-const itemGap = 10
-const itemWidth =
-  (width - horizontalPadding * 2 - itemGap * (numColumns - 1)) / numColumns
 
-// Categories row (top tabs)
-const categories = [
-  { id: 'all', name: 'All', count: 156 },
-  { id: 'electronics', name: 'Electronics', count: 45 },
-  { id: 'fashion', name: 'Fashion', count: 67 },
-  { id: 'home', name: 'Home & Living', count: 23 },
-  { id: 'sports', name: 'Sports', count: 21 },
-]
+// Small helpers
+const formatPrice = (value: number | null | undefined) => {
+  if (value == null) return ''
+  return `€${value.toFixed(2)}`
+}
 
-const sortOptions = [
-  { id: 'popular', name: 'Most Popular', icon: 'fire' as const },
-  { id: 'newest', name: 'Newest First', icon: 'clock-o' as const },
-  {
-    id: 'price-low',
-    name: 'Price: Low to High',
-    icon: 'sort-amount-asc' as const,
-  },
-  {
-    id: 'price-high',
-    name: 'Price: High to Low',
-    icon: 'sort-amount-desc' as const,
-  },
-  { id: 'rating', name: 'Highest Rated', icon: 'star' as const },
-]
+const getImage = (item: any, fallbackIndex: number) =>
+  item.image ||
+  item.image_url ||
+  item.thumbnail ||
+  `https://picsum.photos/seed/shop_${fallbackIndex}/600/800`
 
-// Product data with curated images (option D: per category)
-const products = [
-  {
-    id: '1',
-    name: 'Wireless Bluetooth Headphones Pro',
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.8,
-    reviews: 324,
-    discount: 20,
-    isNew: false,
-    isFavorite: false,
-    category: 'electronics',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1518444021430-6433e83b145e?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '2',
-    name: '4K Ultra HD Smart TV 50”',
-    price: 499.99,
-    originalPrice: 699.99,
-    rating: 4.6,
-    reviews: 182,
-    discount: 29,
-    isNew: true,
-    isFavorite: true,
-    category: 'electronics',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1618005198919-d3d4b5a92eee?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '3',
-    name: 'Premium Gaming Mechanical Keyboard',
-    price: 149.99,
-    originalPrice: 199.99,
-    rating: 4.7,
-    reviews: 567,
-    discount: 25,
-    isNew: false,
-    isFavorite: false,
-    category: 'electronics',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '4',
-    name: 'Ultra HD 4K Monitor 27”',
-    price: 299.99,
-    originalPrice: 399.99,
-    rating: 4.5,
-    reviews: 214,
-    discount: 25,
-    isNew: true,
-    isFavorite: false,
-    category: 'electronics',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '5',
-    name: 'Minimalist Cotton Hoodie',
-    price: 39.99,
-    originalPrice: 59.99,
-    rating: 4.7,
-    reviews: 256,
-    discount: 33,
-    isNew: true,
-    isFavorite: false,
-    category: 'fashion',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '6',
-    name: 'Luxury Leather Handbag',
-    price: 159.99,
-    originalPrice: 199.99,
-    rating: 4.8,
-    reviews: 76,
-    discount: 20,
-    isNew: false,
-    isFavorite: false,
-    category: 'fashion',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '7',
-    name: 'Smart Home Security Camera',
-    price: 79.99,
-    originalPrice: 99.99,
-    rating: 4.5,
-    reviews: 234,
-    discount: 20,
-    isNew: false,
-    isFavorite: true,
-    category: 'home',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1517502884422-3c57a1a30701?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '8',
-    name: 'Premium Memory Foam Mattress Topper',
-    price: 129.99,
-    originalPrice: 169.99,
-    rating: 4.6,
-    reviews: 109,
-    discount: 23,
-    isNew: true,
-    isFavorite: false,
-    category: 'home',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '9',
-    name: 'High-Performance Running Shoes',
-    price: 89.99,
-    originalPrice: 129.99,
-    rating: 4.9,
-    reviews: 654,
-    discount: 31,
-    isNew: true,
-    isFavorite: true,
-    category: 'sports',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '10',
-    name: 'Adjustable Dumbbell Set',
-    price: 199.99,
-    originalPrice: 249.99,
-    rating: 4.7,
-    reviews: 143,
-    discount: 20,
-    isNew: false,
-    isFavorite: false,
-    category: 'sports',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '11',
-    name: 'Nordic Floor Lamp',
-    price: 89.99,
-    originalPrice: 119.99,
-    rating: 4.4,
-    reviews: 89,
-    discount: 25,
-    isNew: true,
-    isFavorite: false,
-    category: 'home',
-    inStock: true,
-    image:
-      'https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=600&q=60',
-  },
-  {
-    id: '12',
-    name: 'Professional Yoga Mat',
-    price: 49.99,
-    originalPrice: 69.99,
-    rating: 4.7,
-    reviews: 156,
-    discount: 29,
-    isNew: true,
-    isFavorite: false,
-    category: 'sports',
-    inStock: true,
-    image: 'https://picsum.photos/400?random=12',
-  },
-]
+const ShopScreen: React.FC = () => {
+const [searchText, setSearchText] = useState('')
 
-const Shop = () => {
-  // Cart logic (keep your existing store + toast)
-  const { addToCart } = require('../../store/cartStore').useCartStore()
-  const { toast } = require('../../components/toast').useAppToast()
+  // Dynamic data
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+  } = useCategories()
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedSort, setSelectedSort] = useState('popular')
-  const [showSortModal, setShowSortModal] = useState(false)
-  const [favorites, setFavorites] = useState(
-    products.filter((p) => p.isFavorite).map((p) => p.id)
+  const {
+    data: saleProducts = [],
+    isLoading: saleLoading,
+  } = useSaleProducts(6)
+
+  const {
+    data: featuredProducts = [],
+    isLoading: featuredLoading,
+  } = useFeaturedProducts(8)
+
+  const {
+    data: allProducts = [],
+    isLoading: allLoading,
+  } = useProducts({ limit: 20 })
+
+  const [topTab, setTopTab] = useState<'all' | 'fast' | 'women' | 'men'>(
+    'all'
   )
 
-  const filteredProducts = products
-    .filter((product) => {
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-      const matchesCategory =
-        selectedCategory === 'all' || product.category === selectedCategory
-      return matchesSearch && matchesCategory
-    })
-    .sort((a, b) => {
-      switch (selectedSort) {
-        case 'newest':
-          return a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1
-        case 'price-low':
-          return a.price - b.price
-        case 'price-high':
-          return b.price - a.price
-        case 'rating':
-          return b.rating - a.rating
-        case 'popular':
-        default:
-          return b.reviews - a.reviews
-      }
-    })
+  const isLoading =
+    categoriesLoading || saleLoading || featuredLoading || allLoading
 
-  const toggleFavorite = (productId: string) => {
-    setFavorites((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    )
-  }
-
-  const renderProductCard = ({ item }: { item: any }) => {
-    const handleAddToShippingBag = () => {
-      if (!item.inStock) return
-      const cartItem = {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        originalPrice: item.originalPrice,
-        color: 'Default',
-        size: 'Default',
-        image: item.image,
-        inStock: item.inStock,
-        category: item.category,
-        rating: item.rating,
-        estimatedDelivery: '2-3 days',
-      }
-      addToCart(cartItem, 1)
-      toast.show(`${item.name} added to shipping bag!`, {
-        type: 'success',
-      })
-    }
-
-    const isFavorite = favorites.includes(item.id)
-    const discountAmount = (
-      ((item.originalPrice - item.price) / item.originalPrice) *
-      100
-    ).toFixed(0)
-
-    return (
-      <TouchableOpacity
-        activeOpacity={0.95}
-        style={[styles.productCard, { width: itemWidth }]}
-        onPress={() => router.push(`/product/${item.id}`)}
-      >
-        <View style={styles.productImageContainer}>
-          <Image source={{ uri: item.image }} style={styles.productImage} />
-          {item.isNew && (
-            <View style={styles.newBadge}>
-              <Text style={styles.newBadgeText}>NEW</Text>
-            </View>
-          )}
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{discountAmount}% OFF</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.favoriteButton}
-            onPress={() => toggleFavorite(item.id)}
-          >
-            <FontAwesome
-              name={isFavorite ? 'heart' : 'heart-o'}
-              size={16}
-              color={isFavorite ? '#ff3b3b' : '#fff'}
-            />
-          </TouchableOpacity>
-          {!item.inStock && (
-            <View style={styles.outOfStockOverlay}>
-              <Text style={styles.outOfStockText}>Sold out</Text>
-            </View>
-          )}
-        </View>
-
-        <View style={styles.productInfo}>
-          <Text style={styles.productName} numberOfLines={2}>
-            {item.name}
-          </Text>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.currentPrice}>€{item.price.toFixed(2)}</Text>
-            <Text style={styles.originalPrice}>
-              €
-              {item.originalPrice.toFixed(2)}
-            </Text>
-          </View>
-
-          <View style={styles.ratingRow}>
-            <View style={styles.stars}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FontAwesome
-                  key={star}
-                  name='star'
-                  size={10}
-                  color={star <= Math.round(item.rating) ? '#FFD700' : '#ddd'}
-                />
-              ))}
-            </View>
-            <Text style={styles.ratingText}>
-              {item.rating.toFixed(1)} · {item.reviews}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    )
-  }
+  // Filtered grid section (simple for now)
+  const gridProducts = allProducts
 
   return (
-    <View style={styles.container}>
+    <View style={styles.screen}>
       <StatusBar style='dark' />
-      
+      {/* Global Shein-style header with sidebar/search/cart */}
+  <FloatingSearchBar
+    inline
+    value={searchText}
+    onChange={setSearchText}
+    suggestions={['Shoes','Jackets','Phones','Watches']}
+    onAIPress={() => router.push('/ai-search')}
+    onVoicePress={() => console.log('voice')}
+    onCartPress={() => router.push('/cart')}
+  />
 
-      {/* Search + sort */}
-      <View style={styles.searchBar}>
-        <View style={styles.searchInputWrapper}>
-          <FontAwesome name='search' size={16} color='#888' />
-          <TextInput
-            style={styles.searchInput}
-            placeholder='Search in Mukulah Shop'
-            placeholderTextColor='#aaa'
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
+    
 
-        <TouchableOpacity
-          style={styles.sortButton}
-          onPress={() => setShowSortModal(true)}
-        >
-          <FontAwesome name='sliders' size={16} color='#222' />
-        </TouchableOpacity>
-      </View>
-
-      {/* Categories */}
-      <View style={styles.categoryRow}>
+      <ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* HERO BANNER CAROUSEL */}
         <ScrollView
           horizontal
+          pagingEnabled
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: horizontalPadding }}
+          style={styles.heroCarousel}
         >
-          {categories.map((category) => {
-            const selected = selectedCategory === category.id
+          {HERO_BANNERS.map((banner) => (
+            <TouchableOpacity
+              key={banner.id}
+              activeOpacity={0.95}
+              style={styles.heroSlide}
+            >
+              <Image
+                source={{ uri: banner.image }}
+                style={styles.heroImage}
+              />
+              <View style={styles.heroOverlay}>
+                <Text style={styles.heroEyebrow}>{banner.eyebrow}</Text>
+                <Text style={styles.heroTitle}>{banner.title}</Text>
+                <Text style={styles.heroSubtitle}>{banner.subtitle}</Text>
+                <View style={styles.heroButton}>
+                  <Text style={styles.heroButtonText}>Shop Now</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* TOP TABS (Tutto / Fast Shipping / Women / Men …) */}
+        <View style={styles.topTabsBar}>
+          {TOP_TABS.map((tab) => {
+            const active = topTab === tab.id
             return (
               <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryChip,
-                  selected && styles.categoryChipSelected,
-                ]}
-                onPress={() => setSelectedCategory(category.id)}
+                key={tab.id}
+                style={styles.topTabItem}
+                onPress={() => setTopTab(tab.id as any)}
               >
                 <Text
                   style={[
-                    styles.categoryChipText,
-                    selected && styles.categoryChipTextSelected,
+                    styles.topTabText,
+                    active && styles.topTabTextActive,
                   ]}
                 >
-                  {category.name}
+                  {tab.label}
                 </Text>
+                {active && <View style={styles.topTabUnderline} />}
               </TouchableOpacity>
             )
           })}
-        </ScrollView>
-      </View>
-
-      {/* Product grid – 2 columns like Shein */}
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        contentContainerStyle={styles.productsList}
-        columnWrapperStyle={{
-          justifyContent: 'space-between',
-          marginBottom: 12,
-        }}
-        renderItem={renderProductCard}
-        showsVerticalScrollIndicator={false}
-      />
-
-      {/* Sort modal */}
-      <Modal
-        visible={showSortModal}
-        transparent
-        animationType='slide'
-        onRequestClose={() => setShowSortModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Sort by</Text>
-            {sortOptions.map((option) => (
-              <TouchableOpacity
-                key={option.id}
-                style={[
-                  styles.sortOption,
-                  selectedSort === option.id && styles.selectedSortOption,
-                ]}
-                onPress={() => {
-                  setSelectedSort(option.id)
-                  setShowSortModal(false)
-                }}
-              >
-                <FontAwesome
-                  name={option.icon}
-                  size={16}
-                  color={selectedSort === option.id ? '#2E8C83' : '#666'}
-                />
-                <Text
-                  style={[
-                    styles.sortOptionText,
-                    selectedSort === option.id && styles.selectedSortText,
-                  ]}
-                >
-                  {option.name}
-                </Text>
-                {selectedSort === option.id && (
-                  <FontAwesome
-                    name='check'
-                    size={16}
-                    color='#2E8C83'
-                    style={{ marginLeft: 'auto' }}
-                  />
-                )}
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              style={styles.closeModalBtn}
-              onPress={() => setShowSortModal(false)}
-            >
-              <Text style={styles.closeModalText}>Close</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </Modal>
+
+        {/* NEW USER GIFTS SECTION */}
+        <View style={styles.giftsCard}>
+          <View style={styles.giftsHeader}>
+            <Text style={styles.giftsTitle}>New User Gifts</Text>
+            <View style={styles.giftsTag}>
+              <Text style={styles.giftsTagText}>Limited-time</Text>
+            </View>
+          </View>
+
+          <View style={styles.giftsContent}>
+            {NEW_USER_GIFTS.map((gift) => (
+              <View key={gift.id} style={styles.giftItem}>
+                <Image
+                  source={{ uri: gift.image }}
+                  style={styles.giftImage}
+                />
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity style={styles.giftsButton}>
+            <Text style={styles.giftsButtonText}>Get Now</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* CATEGORY ICON GRID (DONNA / CURVY / KIDS / MEN / etc) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>Browse by Category</Text>
+        </View>
+        <View style={styles.categoryGrid}>
+          {isLoading && categories.length === 0
+            ? Array.from({ length: 8 }).map((_, idx) => (
+                <View key={idx} style={styles.categorySkeleton} />
+              ))
+            : categories.slice(0, 12).map((cat: any, idx: number) => {
+                const slug =
+                  cat.slug ||
+                  cat.CategorySlug ||
+                  cat.category_slug ||
+                  String(cat.id)
+                const image = cat.image_url || getImage(cat, idx)
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={styles.categoryItem}
+                    activeOpacity={0.9}
+                    onPress={() => router.push(`/categories/${slug}`)}
+                  >
+                    <View style={styles.categoryImageWrapper}>
+                      <Image
+                        source={{ uri: image }}
+                        style={styles.categoryImage}
+                      />
+                    </View>
+                    <Text
+                      style={styles.categoryName}
+                      numberOfLines={2}
+                    >
+                      {cat.name}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
+        </View>
+
+        {/* BLACK-LINE DIVIDER STRIP (FREE SHIPPING / NEW USER …) */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.benefitStrip}
+          contentContainerStyle={{ paddingHorizontal: 12 }}
+        >
+          {BENEFITS.map((benefit) => (
+            <View key={benefit.id} style={styles.benefitPill}>
+              <FontAwesome
+                name={benefit.icon as any}
+                size={13}
+                color={benefit.color}
+              />
+              <Text style={styles.benefitText}>{benefit.label}</Text>
+            </View>
+          ))}
+        </ScrollView>
+
+        {/* TOP DEALS SECTION (LIKE “Saldi Top”) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>Top Deals</Text>
+          <TouchableOpacity>
+            <Text style={styles.sectionLink}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.horizontalProductScroller}
+          contentContainerStyle={{ paddingLeft: 16, paddingRight: 8 }}
+        >
+          {saleLoading && saleProducts.length === 0
+            ? Array.from({ length: 4 }).map((_, idx) => (
+                <View key={idx} style={styles.dealSkeleton} />
+              ))
+            : saleProducts.map((item: any, idx: number) => {
+                const price = item.price ?? item.currentPrice ?? 0
+                const original =
+                  item.originalPrice ?? item.original_price ?? price
+                const hasDiscount = original > price
+                const discountPercent = hasDiscount
+                  ? Math.round(((original - price) / original) * 100)
+                  : 0
+                const image = getImage(item, idx + 100)
+
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.dealCard}
+                    activeOpacity={0.95}
+                    onPress={() => router.push(`/product/${item.id}`)}
+                  >
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.dealImage}
+                    />
+                    {hasDiscount && (
+                      <View style={styles.dealBadge}>
+                        <Text style={styles.dealBadgeText}>
+                          -{discountPercent}%
+                        </Text>
+                      </View>
+                    )}
+                    <View style={styles.dealInfo}>
+                      <Text
+                        style={styles.dealName}
+                        numberOfLines={2}
+                      >
+                        {item.name}
+                      </Text>
+                      <View style={styles.dealPriceRow}>
+                        <Text style={styles.dealPrice}>
+                          {formatPrice(price)}
+                        </Text>
+                        {hasDiscount && (
+                          <Text style={styles.dealOriginalPrice}>
+                            {formatPrice(original)}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                )
+              })}
+        </ScrollView>
+
+        {/* FEATURED STORES / TREND CARD ROW (like Tendenze / Best Sellers) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>Trending Picks</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.featuredRow}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
+        >
+          {featuredLoading && featuredProducts.length === 0
+            ? Array.from({ length: 3 }).map((_, idx) => (
+                <View key={idx} style={styles.featureSkeleton} />
+              ))
+            : featuredProducts.map((item: any, idx: number) => {
+                const image = getImage(item, idx + 200)
+                const price = item.price ?? 0
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    activeOpacity={0.95}
+                    style={styles.featureCard}
+                    onPress={() => router.push(`/product/${item.id}`)}
+                  >
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.featureImage}
+                    />
+                    <View style={styles.featureOverlay}>
+                      <Text
+                        style={styles.featureTitle}
+                        numberOfLines={1}
+                      >
+                        {item.name}
+                      </Text>
+                      <Text style={styles.featureCaption}>
+                        From {formatPrice(price)}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              })}
+        </ScrollView>
+
+        {/* MAIN PRODUCT GRID (like Shein “Per Te” grid) */}
+        <View style={styles.sectionHeaderRow}>
+          <Text style={styles.sectionTitle}>For You</Text>
+          {isLoading && (
+            <ActivityIndicator size='small' color='#2E8C83' />
+          )}
+        </View>
+
+        <View style={styles.gridWrapper}>
+          {gridProducts.length === 0 && !isLoading ? (
+            <View style={styles.emptyBox}>
+              <Text style={styles.emptyText}>
+                No products found yet. Try again later.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.gridContainer}>
+              {isLoading && gridProducts.length === 0
+                ? Array.from({ length: 6 }).map((_, idx) => (
+                    <View key={idx} style={styles.gridSkeleton} />
+                  ))
+                : gridProducts.map((item: any, idx: number) => {
+                    const price = item.price ?? 0
+                    const original =
+                      item.originalPrice ?? item.original_price ?? price
+                    const hasDiscount = original > price
+                    const image = getImage(item, idx + 300)
+
+                    return (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={styles.gridItem}
+                        activeOpacity={0.95}
+                        onPress={() => router.push(`/product/${item.id}`)}
+                      >
+                        <View style={styles.gridImageWrapper}>
+                          <Image
+                            source={{ uri: image }}
+                            style={styles.gridImage}
+                          />
+                          {hasDiscount && (
+                            <View style={styles.gridDiscountChip}>
+                              <Text style={styles.gridDiscountText}>
+                                -{Math.round(
+                                  ((original - price) / original) * 100
+                                )}
+                                %
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                        <Text
+                          style={styles.gridName}
+                          numberOfLines={2}
+                        >
+                          {item.name}
+                        </Text>
+                        <View style={styles.gridPriceRow}>
+                          <Text style={styles.gridPrice}>
+                            {formatPrice(price)}
+                          </Text>
+                          {hasDiscount && (
+                            <Text style={styles.gridOriginalPrice}>
+                              {formatPrice(original)}
+                            </Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    )
+                  })}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </View>
   )
 }
 
+export default ShopScreen
+
+// ------- STATIC DATA FOR BANNERS / GIFTS / BENEFITS -------
+
+const HERO_BANNERS = [
+  {
+    id: 'banner1',
+    image:
+      'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1100&q=80',
+    eyebrow: 'Holiday Sale',
+    title: 'Up to 40% OFF',
+    subtitle: 'On selected winter favourites',
+  },
+  {
+    id: 'banner2',
+    image:
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1100&q=80',
+    eyebrow: 'New User Gifts',
+    title: 'Welcome to Mukulah Shop',
+    subtitle: 'Claim your exclusive welcome bundle',
+  },
+  {
+    id: 'banner3',
+    image:
+      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1100&q=80',
+    eyebrow: 'Express Shipping',
+    title: 'Fast delivery in 2–5 days',
+    subtitle: 'Across Europe on thousands of items',
+  },
+]
+
+const TOP_TABS = [
+  { id: 'all', label: 'All' },
+  { id: 'fast', label: 'Fast Shipping' },
+  { id: 'women', label: 'Women' },
+  { id: 'men', label: 'Men' },
+]
+
+const NEW_USER_GIFTS = [
+  {
+    id: 'g1',
+    image:
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'g2',
+    image:
+      'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'g3',
+    image:
+      'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 'g4',
+    image:
+      'https://images.unsplash.com/photo-1514986888952-8cd320577b68?auto=format&fit=crop&w=600&q=80',
+  },
+]
+
+const BENEFITS = [
+  { id: 'b1', icon: 'truck', label: 'Free Shipping over €49', color: '#00b341' },
+  { id: 'b2', icon: 'calendar-check-o', label: 'Easy Returns 30 Days', color: '#00b341' },
+  { id: 'b3', icon: 'gift', label: 'New User Only', color: '#ff3b3b' },
+]
+
+// ------- STYLES -------
+
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: '#f6f6fb',
   },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: horizontalPadding,
-    paddingTop: 10,
-    paddingBottom: 8,
-    backgroundColor: '#fff0f4', // soft pink like Shein header
-  },
-  searchInputWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: '#ffffff',
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#f5c2d7',
-  },
-  searchInput: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: '#111',
+  scroll: {
     flex: 1,
   },
-  sortButton: {
-    marginLeft: 10,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#f5c2d7',
+
+  // HERO
+  heroCarousel: {
+    height: width * 0.6,
   },
-  categoryRow: {
-    paddingVertical: 10,
-    backgroundColor: '#ffe3ec',
+  heroSlide: {
+    width,
+    height: width * 0.6,
   },
-  categoryChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#ffc2d1',
-    marginRight: 8,
-    backgroundColor: '#fff5f7',
-  },
-  categoryChipSelected: {
-    backgroundColor: '#111111',
-    borderColor: '#111111',
-  },
-  categoryChipText: {
-    fontSize: 13,
-    color: '#444',
-  },
-  categoryChipTextSelected: {
-    color: '#ffffff',
-    fontWeight: '600',
-  },
-  productsList: {
-    paddingHorizontal: horizontalPadding,
-    paddingTop: 12,
-    paddingBottom: 40,
-  },
-  productCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  productImageContainer: {
-    position: 'relative',
-    backgroundColor: '#f8f8f8',
-  },
-  productImage: {
+  heroImage: {
     width: '100%',
-    height: 140,
+    height: '100%',
   },
-  newBadge: {
+  heroOverlay: {
     position: 'absolute',
-    top: 6,
-    left: 6,
-    backgroundColor: '#ff7f50',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  newBadgeText: {
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    backgroundColor: '#000000b3',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  discountText: {
-    color: '#fff',
-    fontSize: 9,
-    fontWeight: '700',
-  },
-  favoriteButton: {
-    position: 'absolute',
-    bottom: 6,
-    right: 6,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    left: 18,
+    bottom: 18,
+    right: 18,
     backgroundColor: 'rgba(0,0,0,0.35)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 14,
+    borderRadius: 16,
   },
-  outOfStockOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  outOfStockText: {
-    color: '#fff',
+  heroEyebrow: {
     fontSize: 12,
-    fontWeight: '700',
-  },
-  productInfo: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-  },
-  productName: {
-    fontSize: 12,
-    color: '#111',
+    color: '#ffe9f3',
     marginBottom: 4,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  currentPrice: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#e0004d',
-    marginRight: 4,
-  },
-  originalPrice: {
-    fontSize: 11,
-    color: '#999',
-    textDecorationLine: 'line-through',
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  stars: {
-    flexDirection: 'row',
-  },
-  ratingText: {
-    marginLeft: 4,
-    fontSize: 10,
-    color: '#777',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 24,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 12,
-    color: '#111',
-  },
-  sortOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    borderRadius: 8,
-    marginBottom: 4,
-  },
-  selectedSortOption: {
-    backgroundColor: '#f0f8f7',
-  },
-  sortOptionText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#666',
-    marginLeft: 12,
-  },
-  selectedSortText: {
-    color: '#2E8C83',
     fontWeight: '600',
   },
-  closeModalBtn: {
-    marginTop: 12,
-    alignSelf: 'center',
-    paddingHorizontal: 24,
+  heroTitle: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: '800',
+  },
+  heroSubtitle: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#fdfdfd',
+  },
+  heroButton: {
+    marginTop: 10,
+    alignSelf: 'flex-start',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  heroButtonText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#111',
+  },
+
+  // Top tabs
+  topTabsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
     paddingVertical: 8,
+    backgroundColor: '#ffe3eb',
+  },
+  topTabItem: {
+    marginRight: 18,
+  },
+  topTabText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#8a4b55',
+  },
+  topTabTextActive: {
+    color: '#111',
+  },
+  topTabUnderline: {
+    marginTop: 3,
+    height: 2,
+    width: 24,
     borderRadius: 999,
     backgroundColor: '#111',
   },
-  closeModalText: {
+
+  // New User Gifts card
+  giftsCard: {
+    marginTop: 8,
+    marginHorizontal: 12,
+    borderRadius: 18,
+    padding: 14,
+    backgroundColor: '#ffe1cf',
+    overflow: 'hidden',
+  },
+  giftsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  giftsTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#ff5b5b',
+  },
+  giftsTag: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: '#ff8a5c',
+  },
+  giftsTagText: {
+    fontSize: 11,
+    fontWeight: '700',
     color: '#fff',
-    fontSize: 14,
+  },
+  giftsContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  giftItem: {
+    width: (width - 12 * 2 - 12) / 4,
+    height: 70,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+  },
+  giftImage: {
+    width: '100%',
+    height: '100%',
+  },
+  giftsButton: {
+    alignSelf: 'center',
+    marginTop: 4,
+    paddingHorizontal: 30,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: '#ff5b5b',
+  },
+  giftsButtonText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 13,
+  },
+
+  // Section headers
+  sectionHeaderRow: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#222',
+  },
+  sectionLink: {
+    fontSize: 13,
+    color: '#ff5b5b',
     fontWeight: '600',
   },
-})
 
-export default Shop
+  // Category grid
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 8,
+    marginTop: 8,
+  },
+  categoryItem: {
+    width: width / 4,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  categoryImageWrapper: {
+    width: 70,
+    height: 70,
+    borderRadius: 24,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  categoryImage: {
+    width: '100%',
+    height: '100%',
+  },
+  categoryName: {
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+  },
+  categorySkeleton: {
+    width: width / 4,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+
+  // Benefit strip
+  benefitStrip: {
+    marginTop: 4,
+    marginBottom: 4,
+    paddingVertical: 6,
+    backgroundColor: '#ffeaf0',
+  },
+  benefitPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: '#fff',
+    marginRight: 8,
+  },
+  benefitText: {
+    marginLeft: 6,
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#333',
+  },
+
+  // Top deals
+  horizontalProductScroller: {
+    marginTop: 8,
+  },
+  dealCard: {
+    width: 150,
+    marginRight: 10,
+    borderRadius: 14,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  dealImage: {
+    width: '100%',
+    height: 120,
+  },
+  dealBadge: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    backgroundColor: '#ff5b5b',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  dealBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  dealInfo: {
+    padding: 8,
+  },
+  dealName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+  },
+  dealPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dealPrice: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111',
+  },
+  dealOriginalPrice: {
+    fontSize: 11,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginLeft: 6,
+  },
+  dealSkeleton: {
+    width: 150,
+    height: 170,
+    marginRight: 10,
+    borderRadius: 14,
+    backgroundColor: '#ececf4',
+  },
+
+  // Featured / trending row
+  featuredRow: {
+    marginTop: 8,
+  },
+  featureCard: {
+    width: 220,
+    height: 130,
+    borderRadius: 18,
+    overflow: 'hidden',
+    marginRight: 12,
+    backgroundColor: '#ddd',
+  },
+  featureImage: {
+    width: '100%',
+    height: '100%',
+  },
+  featureOverlay: {
+    position: 'absolute',
+    left: 10,
+    right: 10,
+    bottom: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  featureTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  featureCaption: {
+    fontSize: 11,
+    color: '#f3f3f3',
+    marginTop: 2,
+  },
+  featureSkeleton: {
+    width: 220,
+    height: 130,
+    borderRadius: 18,
+    marginRight: 12,
+    backgroundColor: '#ececf4',
+  },
+
+  // Grid
+  gridWrapper: {
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingBottom: 20,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: (width - 8 * 2 - 10) / 2,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  gridImageWrapper: {
+    position: 'relative',
+  },
+  gridImage: {
+    width: '100%',
+    height: 190,
+    backgroundColor: '#f6f6f6',
+  },
+  gridDiscountChip: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#000000b3',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  gridDiscountText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  gridName: {
+    paddingHorizontal: 8,
+    marginTop: 6,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+  },
+  gridPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    marginTop: 4,
+  },
+  gridPrice: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111',
+  },
+  gridOriginalPrice: {
+    fontSize: 11,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginLeft: 6,
+  },
+  gridSkeleton: {
+    width: (width - 8 * 2 - 10) / 2,
+    height: 260,
+    borderRadius: 14,
+    backgroundColor: '#ececf4',
+    marginBottom: 12,
+  },
+
+  emptyBox: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#777',
+  },
+})

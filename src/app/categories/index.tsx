@@ -14,9 +14,10 @@ import { FontAwesome } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useCategories } from '../../api/server/api'
 import { Header } from '../../components'
+import FloatingSearchBar from '../../components/layout/FloatingSearchBar'
 
 const { width } = Dimensions.get('window')
-
+const [searchText, setSearchText] = useState('')
 // Top “tabs” like SHEIN: All / Women / Curvy / Kids / Men / Home
 const TOP_TABS = [
   { id: 'all', label: 'All' },
@@ -155,8 +156,15 @@ const CategoriesScreen: React.FC = () => {
 
   return (
     <View style={styles.root}>
-      {/* Global Shein-style header you already use */}
-      <Header />
+    <FloatingSearchBar
+          inline
+          value={searchText}
+          onChange={setSearchText}
+          suggestions={['Shoes','Jackets','Phones','Watches']}
+          onAIPress={() => router.push('/ai-search')}
+          onVoicePress={() => console.log('voice')}
+          onCartPress={() => router.push('/cart')}
+        />
 
       {/* Top category tabs (Tutto / Donna / Curvy / … in English) */}
       <View style={styles.topTabsWrapper}>

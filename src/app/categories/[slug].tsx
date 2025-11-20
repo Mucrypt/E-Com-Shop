@@ -10,33 +10,79 @@ import {
   Modal,
   Dimensions,
   ActivityIndicator,
+  ScrollView,
+  Image,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, Ionicons } from '@expo/vector-icons'
 
 import {
   useCategoryProducts,
   useCategoryBySlug,
 } from '../../api/server/api'
 import { useSortOptions } from '../../api/server/useSortOptions'
-import { Header } from '../../components'
 
 const { width } = Dimensions.get('window')
 const NUM_COLUMNS = 2
-const H_PADDING = 16
+const H_PADDING = 12
 const GAP = 10
 const ITEM_WIDTH =
   (width - H_PADDING * 2 - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS
 
+// round “Cropped / Long / Regular Fit …”
+// Temporary mock images (replace with Supabase images later)
+const SUB_FILTERS = [
+  {
+    id: 'cropped',
+    label: 'Cropped',
+    image: 'https://picsum.photos/seed/cropped/200/200',
+  },
+  {
+    id: 'long',
+    label: 'Long',
+    image: 'https://picsum.photos/seed/long/200/200',
+  },
+  {
+    id: 'regular',
+    label: 'Regular Fit',
+    image: 'https://picsum.photos/seed/regular/200/200',
+  },
+  {
+    id: 'loose',
+    label: 'Loose',
+    image: 'https://picsum.photos/seed/loose/200/200',
+  },
+  {
+    id: 'stretch',
+    label: 'High Stretch',
+    image: 'https://picsum.photos/seed/stretch/200/200',
+  },
+  {
+    id: 'slim',
+    label: 'Slim',
+    image: 'https://picsum.photos/seed/slim/200/200',
+  },
+]
+
+// small promo chips: Black Friday / QuickShip / …
+const TAG_FILTERS = [
+  'Black Friday',
+  'QuickShip',
+  'Tendenze',
+  'New Items',
+]
+
 const CategorySlug = () => {
   const { slug } = useLocalSearchParams()
+
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSort, setSelectedSort] = useState('featured')
   const [showSortModal, setShowSortModal] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [favorites, setFavorites] = useState<string[]>([])
+  const [activeSubFilter, setActiveSubFilter] = useState<string>('')
 
   // Sort options from DB
   const {
@@ -82,7 +128,6 @@ const CategorySlug = () => {
   const renderProduct = ({ item }: { item: any }) => {
     const isFavorite = favorites.includes(item.id)
 
-    // Safely handle price / originalPrice
     const price = item.price ?? item.currentPrice ?? 0
     const originalPrice =
       item.originalPrice ?? item.original_price ?? price
@@ -103,7 +148,7 @@ const CategorySlug = () => {
       `https://picsum.photos/400?random=${item.id}`
 
     if (viewMode === 'list') {
-      // ---------- LIST VIEW ----------
+      // LIST VIEW (still available from header grid icon)
       return (
         <TouchableOpacity
           style={styles.listProductCard}
@@ -111,9 +156,11 @@ const CategorySlug = () => {
           activeOpacity={0.92}
         >
           <View style={styles.listProductImage}>
-            {/* Here you can switch to <Image> when you map real URLs from DB */}
-            {/* <Image source={{ uri: imageUri }} style={styles.listImage} /> */}
-            <FontAwesome name='image' size={40} color='#ccc' />
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.listImage}
+              resizeMode='cover'
+            />
             {item.isNew && (
               <View style={styles.newBadgeList}>
                 <Text style={styles.newBadgeText}>NEW</Text>
@@ -127,12 +174,12 @@ const CategorySlug = () => {
                 {item.name}
               </Text>
               <TouchableOpacity
-                style={styles.favoriteBtn}
+                style={styles.favoriteCircle}
                 onPress={() => toggleFavorite(item.id)}
               >
                 <FontAwesome
                   name={isFavorite ? 'heart' : 'heart-o'}
-                  size={18}
+                  size={16}
                   color={isFavorite ? '#ff3b3b' : '#999'}
                 />
               </TouchableOpacity>
@@ -178,19 +225,19 @@ const CategorySlug = () => {
       )
     }
 
-    // ---------- GRID VIEW ----------
+    // GRID VIEW (Shein cards)
     return (
       <TouchableOpacity
         style={[styles.productCard, { width: ITEM_WIDTH }]}
         onPress={() => router.push(`/product/${item.id}`)}
-        activeOpacity={0.95}
+        activeOpacity={0.96}
       >
         <View style={styles.productImageContainer}>
-          {/* Replace icon with <Image> when real image URLs are ready */}
-          {/* <Image source={{ uri: imageUri }} style={styles.productImage} /> */}
-          <View style={styles.productImage}>
-            <FontAwesome name='image' size={40} color='#ccc' />
-          </View>
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.productImage}
+            resizeMode='cover'
+          />
 
           {item.isNew && (
             <View style={styles.newBadge}>
@@ -204,7 +251,7 @@ const CategorySlug = () => {
           )}
 
           <TouchableOpacity
-            style={styles.favoriteBtn}
+            style={styles.favoriteCircle}
             onPress={() => toggleFavorite(item.id)}
           >
             <FontAwesome
@@ -250,11 +297,7 @@ const CategorySlug = () => {
             </View>
 
             <TouchableOpacity style={styles.addToCartBtn}>
-              <FontAwesome
-                name='shopping-cart'
-                size={14}
-                color='#2E8C83'
-              />
+              <FontAwesome name='shopping-cart' size={14} color='#2E8C83' />
             </TouchableOpacity>
           </View>
         </View>
@@ -325,63 +368,150 @@ const CategorySlug = () => {
     </Modal>
   )
 
-  // ---------- RENDER ----------
   const isLoading = categoryLoading || productsLoading
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style='dark' />
-      {/* Global Shein-style header */}
-      <Header />
 
-      {/* Category header strip */}
-      <View style={styles.headerStrip}>
-        <View>
-          <Text style={styles.title}>{categoryName}</Text>
-          <Text style={styles.subtitle}>
-            {filteredProducts.length} products
-          </Text>
-        </View>
+      {/* SHEIN-STYLE CATEGORY HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name='arrow-back' size={22} color='#111' />
+        </TouchableOpacity>
 
-        <View style={styles.headerIconsRow}>
-          <TouchableOpacity
-            style={styles.roundHeaderIcon}
-            onPress={() => setShowSortModal(true)}
-          >
-            <FontAwesome name='sliders' size={16} color='#222' />
+        {/* search bar with category name */}
+        <View style={styles.headerSearchWrapper}>
+          <FontAwesome name='search' size={14} color='#aaa' />
+          <TextInput
+            style={styles.headerSearchInput}
+            placeholder={categoryName}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor='#aaa'
+          />
+          <TouchableOpacity>
+            <Ionicons name='camera-outline' size={18} color='#666' />
           </TouchableOpacity>
-          <View style={styles.viewToggle}>
-            <TouchableOpacity
-              style={[
-                styles.viewButton,
-                viewMode === 'grid' && styles.activeViewButton,
-              ]}
-              onPress={() => setViewMode('grid')}
-            >
-              <FontAwesome
-                name='th'
-                size={13}
-                color={viewMode === 'grid' ? '#fff' : '#666'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.viewButton,
-                viewMode === 'list' && styles.activeViewButton,
-              ]}
-              onPress={() => setViewMode('list')}
-            >
-              <FontAwesome
-                name='list'
-                size={13}
-                color={viewMode === 'list' ? '#fff' : '#666'}
-              />
-            </TouchableOpacity>
-          </View>
         </View>
+
+        {/* grid toggle icon */}
+        <TouchableOpacity
+          onPress={() =>
+            setViewMode((prev) => (prev === 'grid' ? 'list' : 'grid'))
+          }
+        >
+          <Ionicons
+            name={viewMode === 'grid' ? 'grid-outline' : 'list-outline'}
+            size={20}
+            color='#111'
+          />
+        </TouchableOpacity>
+
+        {/* favourites icon */}
+        <TouchableOpacity>
+          <FontAwesome name='heart-o' size={20} color='#111' />
+        </TouchableOpacity>
       </View>
 
-      {/* Loading / error */}
+      {/* SUB-FILTER ROUND CHIPS (Cropped / Long / …) */}
+      <View style={styles.subFiltersWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: H_PADDING }}
+        >
+          {SUB_FILTERS.map((f) => {
+            const active = activeSubFilter === f.id
+            return (
+              <TouchableOpacity
+                key={f.id}
+                style={[
+                  styles.subFilterChip,
+                  active && styles.subFilterChipActive,
+                ]}
+                onPress={() =>
+                  setActiveSubFilter((prev) =>
+                    prev === f.id ? '' : f.id
+                  )
+                }
+                activeOpacity={0.8}
+              >
+                <View style={styles.subFilterCircle}>
+                  <Image
+                    source={{ uri: f.image }}
+                    style={{ width: '100%', height: '100%', borderRadius: 29 }}
+                    resizeMode='cover'
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.subFilterLabel,
+                    active && styles.subFilterLabelActive,
+                  ]}
+                >
+                  {f.label}
+                </Text>
+              </TouchableOpacity>
+            )
+          })}
+        </ScrollView>
+      </View>
+
+      {/* SORT TABS (Recommend / Most Popular / Price / Filter) */}
+      <View style={styles.sortTabsRow}>
+        <TouchableOpacity
+          style={styles.sortTab}
+          onPress={() => setShowSortModal(true)}
+        >
+          <Text style={styles.sortTabActiveText}>Recommend</Text>
+          <FontAwesome name='chevron-down' size={10} color='#111' />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.sortTab}
+          onPress={() => setShowSortModal(true)}
+        >
+          <Text style={styles.sortTabText}>Most Popular</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.sortTab}
+          onPress={() => setShowSortModal(true)}
+        >
+          <Text style={styles.sortTabText}>Price</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.sortTab, { justifyContent: 'flex-end' }]}
+          onPress={() => console.log('Open filters')}
+        >
+          <Text style={styles.sortTabText}>Filter</Text>
+          <Ionicons
+            name='filter-outline'
+            size={14}
+            color='#555'
+            style={{ marginLeft: 4 }}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* PROMO TAG FILTERS (Black Friday / QuickShip / …) */}
+      <View style={styles.tagFiltersRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: H_PADDING }}
+        >
+          {TAG_FILTERS.map((t) => (
+            <TouchableOpacity key={t} style={styles.tagChip}>
+              <Text style={styles.tagChipText}>{t}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* MAIN CONTENT */}
       {isLoading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size='large' color='#2E8C83' />
@@ -399,36 +529,12 @@ const CategorySlug = () => {
         </View>
       ) : (
         <>
-          {/* Search bar */}
-          <View style={styles.searchContainer}>
-            <View style={styles.searchBar}>
-              <FontAwesome name='search' size={16} color='#999' />
-              <TextInput
-                style={styles.searchInput}
-                placeholder={`Search in ${categoryName}`}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor='#999'
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <FontAwesome
-                    name='times-circle'
-                    size={16}
-                    color='#999'
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-
-          {/* Products list */}
           <FlatList
             data={filteredProducts}
             renderItem={renderProduct}
             keyExtractor={(item) => String(item.id)}
             numColumns={viewMode === 'grid' ? NUM_COLUMNS : 1}
-            key={viewMode} // force relayout when toggling
+            key={viewMode}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.productsList}
             columnWrapperStyle={
@@ -453,79 +559,107 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f6f6fb',
   },
-  headerStrip: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: H_PADDING,
-    paddingVertical: 10,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ececf2',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111',
-  },
-  subtitle: {
-    fontSize: 12,
-    color: '#777',
-    marginTop: 2,
-  },
-  headerIconsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  roundHeaderIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
 
-  // Search
-  searchContainer: {
-    backgroundColor: '#ffffff',
+  // HEADER
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: H_PADDING,
     paddingTop: 4,
-    paddingBottom: 10,
+    paddingBottom: 8,
+    backgroundColor: '#fff',
   },
-  searchBar: {
+  headerSearchWrapper: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    backgroundColor: '#f2f3f6',
+    marginHorizontal: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 999,
   },
-  searchInput: {
+  headerSearchInput: {
     flex: 1,
-    marginLeft: 8,
+    marginHorizontal: 6,
     fontSize: 14,
     color: '#111',
   },
 
-  // View toggle
-  viewToggle: {
-    flexDirection: 'row',
-    backgroundColor: '#f3f4f6',
-    borderRadius: 999,
-    padding: 2,
+  // SUB FILTER ROUND CHIPS
+  subFiltersWrapper: {
+    backgroundColor: '#fff',
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ececf2',
   },
-  viewButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
+  subFilterChip: {
+    alignItems: 'center',
+    marginRight: 14,
   },
-  activeViewButton: {
-    backgroundColor: '#2E8C83',
+  subFilterChipActive: {},
+  subFilterCircle: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: '#f3f3f3',
+    marginBottom: 4,
+  },
+  subFilterLabel: {
+    fontSize: 11,
+    color: '#444',
+  },
+  subFilterLabelActive: {
+    fontWeight: '700',
   },
 
-  // Products
+  // SORT TABS ROW
+  sortTabsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: H_PADDING,
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ececf2',
+  },
+  sortTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  sortTabActiveText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111',
+    marginRight: 4,
+  },
+  sortTabText: {
+    fontSize: 14,
+    color: '#555',
+  },
+
+  // TAG FILTERS
+  tagFiltersRow: {
+    backgroundColor: '#fff',
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ececf2',
+  },
+  tagChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: '#f3f3f6',
+    marginRight: 8,
+  },
+  tagChipText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
+  },
+
+  // PRODUCTS
   productsList: {
     paddingHorizontal: H_PADDING,
     paddingTop: 10,
@@ -545,10 +679,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   productImage: {
-    height: 150,
+    height: 190,
     backgroundColor: '#f8f8f8',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   newBadge: {
     position: 'absolute',
@@ -578,13 +710,13 @@ const styles = StyleSheet.create({
     fontSize: 9,
     fontWeight: 'bold',
   },
-  favoriteBtn: {
+  favoriteCircle: {
     position: 'absolute',
     bottom: 8,
     right: 8,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: 'rgba(0,0,0,0.35)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -643,7 +775,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  // List view
+  // LIST VIEW
   listProductCard: {
     flexDirection: 'row',
     backgroundColor: '#ffffff',
@@ -657,14 +789,18 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   listProductImage: {
-    width: 90,
-    height: 90,
+    width: 100,
+    height: 100,
     borderRadius: 10,
     backgroundColor: '#f8f8f8',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
     overflow: 'hidden',
+  },
+  listImage: {
+    width: '100%',
+    height: '100%',
   },
   newBadgeList: {
     position: 'absolute',
@@ -719,7 +855,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 
-  // Modal
+  // MODAL
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -765,7 +901,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // States
+  // STATES
   centerContainer: {
     flex: 1,
     justifyContent: 'center',

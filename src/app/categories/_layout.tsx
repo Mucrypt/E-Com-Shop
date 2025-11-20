@@ -1,45 +1,18 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+// app/(shop)/categories/_layout.tsx
 import React from 'react'
-import { Stack, router, useLocalSearchParams } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { Stack } from 'expo-router'
 
 const CategoriesLayout = () => {
   return (
     <Stack>
-      <Stack.Screen
-        name='[slug]'
-        options={({ route }) => {
-          const params = route.params as { slug?: string } | undefined
-          const slug = params?.slug
-          const categoryName = slug
-            ? slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ')
-            : 'Category'
+      {/* Index (categories list) keeps default header or its own options */}
+      <Stack.Screen name="index" options={{ headerShown: false }} />
 
-          return {
-            title: categoryName,
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#2E8C83',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-            },
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{ marginLeft: 15 }}
-              >
-                <Ionicons name='arrow-back' size={24} color='white' />
-              </TouchableOpacity>
-            ),
-            headerRight: () => (
-              <TouchableOpacity style={{ marginRight: 15 }}>
-                <Ionicons name='search' size={24} color='white' />
-              </TouchableOpacity>
-            ),
-          }
+      {/* Category slug uses a full custom header inside the screen */}
+      <Stack.Screen
+        name="[slug]"
+        options={{
+          headerShown: false,
         }}
       />
     </Stack>

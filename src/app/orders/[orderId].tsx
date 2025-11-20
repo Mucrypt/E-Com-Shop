@@ -277,7 +277,7 @@ const OrderDetails = () => {
           text: 'Add to Cart',
           onPress: () => {
             Alert.alert('Success', 'Items added to cart!')
-            router.push('/(shop)/cart')
+            router.push('/cart')
           },
         },
       ]

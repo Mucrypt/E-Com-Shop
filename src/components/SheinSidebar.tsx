@@ -32,8 +32,8 @@ const FALLBACK_IMAGE =
 
 const BOTTOM_TABS = [
   { label: 'Home', icon: 'home' as const, route: '/(shop)/index' },
-  { label: 'Category', icon: 'search' as const, route: '/(shop)/shop' },
-  { label: 'Cart', icon: 'shopping-cart' as const, route: '/(shop)/cart' },
+  { label: 'Media', icon: 'play-circle' as const, route: '/(media)' },
+  { label: 'Cart', icon: 'shopping-cart' as const, route: '/(tabs)/cart' },
   { label: 'Me', icon: 'user' as const, route: '/(shop)/profile' },
 ]
 

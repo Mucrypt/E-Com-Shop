@@ -1,691 +1,333 @@
 // app/(shop)/product/[slug].tsx
-import React, { useState } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Dimensions,
-  Image,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from 'react-native'
-import { useLocalSearchParams, router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import { FontAwesome } from '@expo/vector-icons'
-import { useCartStore } from '../../store'
-import { useAppToast } from '../../components/toast'
+import React, { useState } from "react";
+import { View, ScrollView, Text, StatusBar, ScrollView as RNScrollView } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 
-const { width } = Dimensions.get('window')
+import ProductHeader from "../../components/premium/ProductHeader";
+import ProductCarousel from "../../components/premium/ProductCarousel";
+import ProductTabs from "../../components/premium/ProductTabs";
+import ProductPriceBlock from "../../components/premium/ProductPriceBlock";
+import ProductVariants from "../../components/premium/ProductVariants";
+import ProductAccordion from "../../components/premium/ProductAccordion";
+import ProductSeller from "../../components/premium/ProductSeller";
+import ProductReviewsPreview from "../../components/premium/ProductReviewsPreview";
+import ProductRecommendations, {
+  RecommendProduct,
+} from "../../components/premium/ProductRecommendations";
+import ProductBottomBar from "../../components/premium/ProductBottomBar";
 
-// ---- Mock product data that changes based on slug ----
-const getProductBySlug = (slug: string) => {
-  const products = {
-    'wireless-headphones': {
-      id: '1',
-      name: 'Premium Wireless Headphones',
-      price: 199.99,
-      originalPrice: 249.99,
-      rating: 4.8,
-      reviews: 328,
-      sold: '9.8K',
-      description:
-        'Experience studio-quality sound with active noise cancellation, 30-hour battery life and ultra-soft ear cushions designed for all-day comfort.',
-      features: [
-        'Active Noise Cancellation',
-        '30-hour battery life',
-        'Wireless Bluetooth 5.3',
-        'Fast USB-C charging',
-        'Foldable, travel-ready design',
-      ],
-      colors: ['Black', 'White', 'Blue'],
-      images: [
-        'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1518444021430-6433e83b145e?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1524678714210-9917a6c619c3?auto=format&fit=crop&w=900&q=80',
-      ],
-      category: 'Electronics',
-    },
-    smartphone: {
-      id: '2',
-      name: 'Smartphone Pro Max 5G',
-      price: 899.99,
-      originalPrice: 1049.99,
-      rating: 4.9,
-      reviews: 512,
-      sold: '15.4K',
-      description:
-        'Flagship 5G smartphone with a cinematic triple-camera system, all-day battery and a stunning 120Hz OLED display.',
-      features: [
-        'Triple 50MP camera system',
-        '6.7" 120Hz OLED display',
-        '5G + Wi-Fi 6E',
-        'Fast 45W charging',
-        'IP68 water resistant',
-      ],
-      colors: ['Midnight Black', 'Silver', 'Alpine Blue'],
-      images: [
-        'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1512499617640-c2f999018b72?auto=format&fit=crop&w=900&q=80',
-      ],
-      category: 'Electronics',
-    },
-    laptop: {
-      id: '3',
-      name: 'RTX Gaming Laptop 15”',
-      price: 1299.99,
-      originalPrice: 1549.99,
-      rating: 4.7,
-      reviews: 189,
-      sold: '3.2K',
-      description:
-        'High-performance gaming laptop powered by RTX graphics, 16GB RAM and a 144Hz display for ultra-smooth gameplay.',
-      features: [
-        'NVIDIA RTX graphics',
-        '16GB DDR5 RAM',
-        '1TB NVMe SSD',
-        '144Hz FHD display',
-        'RGB backlit keyboard',
-      ],
-      colors: ['Shadow Black', 'Crimson Red'],
-      images: [
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80',
-        'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80',
-      ],
-      category: 'Electronics',
-    },
-  }
+const GOLD = "#D4AF37";
 
-  return (
-    products[slug as keyof typeof products] ||
-    products['wireless-headphones']
-  )
-}
+// MOCK PRODUCT
+const mockProduct = {
+  id: "1",
+  name: "Premium Denim Jacket Mukulah Edition",
+  price: 29.99,
+  oldPrice: 49.99,
+  discount: 40,
+  rating: 4.6,
+  reviewsCount: 237,
+  images: [
+    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
+    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+  ],
+  colors: ["Light Blue", "Black", "Washed Grey"],
+  sizes: ["XS", "S", "M", "L", "XL"],
+  description:
+    "A Mukulah premium denim jacket inspired by street fashion and luxury minimalism. Soft-touch cotton blend, tailored fit, and subtle gold accent stitching.",
+  shipping:
+    "Ships in 2–5 business days. Free shipping over $49. Delivered by Mukulah Logistics partners.",
+  returns:
+    "30-day easy return policy. Return via pickup points or direct courier pickup.",
+  security:
+    "Secure checkout powered by leading payment providers. Encrypted transactions and buyer protection.",
+  seller: {
+    name: "Mukulah Official Store",
+    logo: "",
+    rating: 4.8,
+    followers: 23560,
+  },
+  reviewTags: [
+    "Good quality",
+    "True to size",
+    "Comfortable",
+    "Stylish",
+    "Worth the price",
+  ],
+};
 
-const ProductSlug = () => {
-  const { slug } = useLocalSearchParams()
-  const { addToCart } = useCartStore()
-  const { toast } = useAppToast()
+const mockRecommendations: RecommendProduct[] = [
+  {
+    id: "r1",
+    name: "Mukulah Slim Fit Jeans",
+    price: 19.99,
+    oldPrice: 39.99,
+    image:
+      "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "r2",
+    name: "Oversized Hoodie Mukulah Street",
+    price: 24.99,
+    oldPrice: 34.99,
+    image:
+      "https://images.unsplash.com/photo-1617957743091-4bfb6e57da5e?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "r3",
+    name: "Premium Basic T-Shirt",
+    price: 11.99,
+    oldPrice: 19.99,
+    image:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "r4",
+    name: "Mukulah Cargo Pants",
+    price: 27.49,
+    oldPrice: 44.99,
+    image:
+      "https://images.unsplash.com/photo-1520467795206-62e3235a2533?auto=format&fit=crop&w=900&q=80",
+  },
+];
 
-  const product = getProductBySlug(
-    typeof slug === 'string' ? slug : 'wireless-headphones'
-  )
+const RECOMMEND_CATEGORIES = [
+  "For You",
+  "Similar Style",
+  "From This Seller",
+  "Best Rated",
+  "More Jackets",
+];
 
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
-  const [quantity, setQuantity] = useState(1)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
-
-  const discountPercentage = Math.round(
-    ((product.originalPrice - product.price) / product.originalPrice) * 100
-  )
-
-  const handleImageScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const index = Math.round(e.nativeEvent.contentOffset.x / width)
-    setActiveImageIndex(index)
-  }
+export default function ProductSlugScreen() {
+  const { slug } = useLocalSearchParams();
+  const [tab, setTab] = useState<"Goods" | "Reviews" | "Recommend">("Goods");
+  const [selectedColor, setSelectedColor] = useState(mockProduct.colors[0]);
+  const [selectedSize, setSelectedSize] = useState(mockProduct.sizes[2]);
+  const [activeRecommendCategory, setActiveRecommendCategory] = useState("For You");
 
   const handleAddToCart = () => {
-    const cartItem = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      color: selectedColor,
-      size: 'Default',
-      image: product.images[0],
-      inStock: true,
-      category: product.category,
-      rating: product.rating,
-      estimatedDelivery: '2-3 days',
+    // integrate with your cart later
+    console.log("Add to cart:", mockProduct.id, selectedColor, selectedSize);
+  };
+
+  const [hasAutoOpenedRecommend, setHasAutoOpenedRecommend] = useState(false);
+
+  const handleScrollEnd = (e: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+    const paddingToBottom = 80;
+
+    if (
+      !hasAutoOpenedRecommend &&
+      layoutMeasurement.height + contentOffset.y >=
+        contentSize.height - paddingToBottom
+    ) {
+      setTab("Recommend");
+      setHasAutoOpenedRecommend(true);
     }
-
-    addToCart(cartItem, quantity)
-    toast.show(`${product.name} added to cart!`, { type: 'success' })
-  }
-
-  const handleBuyNow = () => {
-    handleAddToCart()
-    setTimeout(() => {
-      router.push('/(shop)/cart')
-    }, 80)
-  }
+  };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style='light' />
+    <View style={{ flex: 1, backgroundColor: "#f4f4f4" }}>
+      <StatusBar barStyle="light-content" />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* HERO IMAGE CAROUSEL */}
-        <View style={styles.heroWrapper}>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={handleImageScroll}
-          >
-            {product.images.map((uri, idx) => (
-              <Image
-                key={uri + idx}
-                source={{ uri }}
-                style={styles.heroImage}
-                resizeMode='cover'
-              />
-            ))}
-          </ScrollView>
+      {/* Floating Shein-style header with search bar + cart + share */}
+      <ProductHeader />
 
-          {/* Top-right icons over image */}
-          <View style={styles.heroTopIcons}>
-            <TouchableOpacity style={styles.heroIconBtn}>
-              <FontAwesome name='heart-o' size={18} color='#fff' />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.heroIconBtn}>
-              <FontAwesome name='share-alt' size={18} color='#fff' />
-            </TouchableOpacity>
-          </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        onMomentumScrollEnd={handleScrollEnd}
+      >
+        {/* HERO CAROUSEL */}
+        <ProductCarousel images={mockProduct.images} />
 
-          {/* Image dots indicator */}
-          <View style={styles.imageDots}>
-            {product.images.map((_, idx) => (
-              <View
-                key={idx}
-                style={[
-                  styles.dot,
-                  idx === activeImageIndex && styles.activeDot,
-                ]}
-              />
-            ))}
-          </View>
+        {/* TABS (Goods | Reviews | Recommend) */}
+        <ProductTabs active={tab} onChange={(key) => setTab(key as any)} />
 
-          {/* Mini counter bottom-right */}
-          <View style={styles.imageCounter}>
-            <Text style={styles.imageCounterText}>
-              {activeImageIndex + 1} / {product.images.length}
+        {/* PRICE + NAME + BASIC RATING --- always visible on all tabs */}
+        <View
+          style={{
+            backgroundColor: "#fff",
+            paddingHorizontal: 16,
+            paddingVertical: 16,
+            borderBottomWidth: 1,
+            borderColor: "#e5e5e5",
+          }}
+        >
+          <ProductPriceBlock
+            price={mockProduct.price}
+            oldPrice={mockProduct.oldPrice}
+            discount={mockProduct.discount}
+          />
+
+          <View style={{ marginTop: 12 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: "#111",
+                marginBottom: 6,
+              }}
+            >
+              {mockProduct.name}
             </Text>
+
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={{ fontSize: 13, color: "#444" }}>
+                {mockProduct.rating.toFixed(1)} · {mockProduct.reviewsCount} reviews
+              </Text>
+            </View>
           </View>
         </View>
 
-        {/* MAIN CONTENT */}
-        <View style={styles.content}>
-          {/* Name + price block */}
-          <Text style={styles.productName}>{product.name}</Text>
+        {/* ------------- GOODS TAB CONTENT (like your screenshot) ------------- */}
+        {tab === "Goods" && (
+          <>
+            {/* VARIANTS */}
+            <ProductVariants
+              colors={mockProduct.colors}
+              sizes={mockProduct.sizes}
+              selectedColor={selectedColor}
+              selectedSize={selectedSize}
+              onSelectColor={setSelectedColor}
+              onSelectSize={setSelectedSize}
+            />
 
-          <View style={styles.priceRow}>
-            <Text style={styles.price}>
-              €{product.price.toFixed(2)}
-            </Text>
-            <Text style={styles.originalPrice}>
-              €{product.originalPrice.toFixed(2)}
-            </Text>
-            <View style={styles.discountTag}>
-              <Text style={styles.discountTagText}>
-                -{discountPercentage}%
+            {/* ACCORDIONS / SECTIONS */}
+            <ProductAccordion title="Description">
+              <Text style={{ fontSize: 14, color: "#444", lineHeight: 20 }}>
+                {mockProduct.description}
+              </Text>
+            </ProductAccordion>
+
+            <ProductAccordion title="Shipping to Italy">
+              <Text style={{ fontSize: 14, color: "#444", lineHeight: 20 }}>
+                {mockProduct.shipping}
+              </Text>
+            </ProductAccordion>
+
+            <ProductAccordion title="Return Policy">
+              <Text style={{ fontSize: 14, color: "#444", lineHeight: 20 }}>
+                {mockProduct.returns}
+              </Text>
+            </ProductAccordion>
+
+            <ProductAccordion title="Shopping Security">
+              <Text style={{ fontSize: 14, color: "#444", lineHeight: 20 }}>
+                {mockProduct.security}
+              </Text>
+            </ProductAccordion>
+
+            {/* SELLER CARD */}
+            <ProductSeller
+              name={mockProduct.seller.name}
+              logo={mockProduct.seller.logo}
+              rating={mockProduct.seller.rating}
+              followers={mockProduct.seller.followers}
+            />
+
+            {/* REVIEWS PREVIEW (small block like “Reviews (1000+) 4.82 True to Size”) */}
+            <ProductReviewsPreview
+              rating={mockProduct.rating}
+              reviewsCount={mockProduct.reviewsCount}
+              tags={mockProduct.reviewTags}
+            />
+
+            {/* RECOMMENDED PRODUCTS also visible at bottom of Goods tab */}
+            <ProductRecommendations
+              title="Recommended for you"
+              products={mockRecommendations}
+              onPressProduct={(id) => {
+                console.log("Open recommended product", id);
+              }}
+            />
+          </>
+        )}
+
+        {/* ------------- REVIEWS TAB CONTENT ------------- */}
+        {tab === "Reviews" && (
+          <View style={{ backgroundColor: "#fff", marginTop: 8 }}>
+            <ProductReviewsPreview
+              rating={mockProduct.rating}
+              reviewsCount={mockProduct.reviewsCount}
+              tags={mockProduct.reviewTags}
+            />
+            <View style={{ paddingHorizontal: 16, paddingBottom: 20 }}>
+              <Text style={{ fontSize: 13, color: "#666", lineHeight: 20 }}>
+                Detailed review list will go here later – photos, size feedback,
+                filters, etc. For now this shows the main rating summary like on
+                Shein.
               </Text>
             </View>
           </View>
+        )}
 
-          {/* Rating + sold */}
-          <View style={styles.ratingRow}>
-            <View style={styles.starsRow}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <FontAwesome
-                  key={star}
-                  name='star'
-                  size={12}
-                  color={
-                    star <= Math.round(product.rating)
-                      ? '#FFD700'
-                      : '#E0E0E0'
-                  }
-                />
-              ))}
-            </View>
-            <Text style={styles.ratingText}>
-              {product.rating.toFixed(1)} · {product.reviews} reviews ·{' '}
-              {product.sold} sold
-            </Text>
-          </View>
-
-          {/* Benefit strip like Shein: free shipping / returns / delivery */}
-          <View style={styles.benefitStrip}>
-            <View style={styles.benefitItem}>
-              <FontAwesome name='truck' size={14} color='#2E8C83' />
-              <Text style={styles.benefitText}>Free Shipping over €49</Text>
-            </View>
-            <View style={styles.benefitItem}>
-              <FontAwesome name='undo' size={14} color='#2E8C83' />
-              <Text style={styles.benefitText}>30-day easy returns</Text>
-            </View>
-            <View style={styles.benefitItem}>
-              <FontAwesome name='clock-o' size={14} color='#2E8C83' />
-              <Text style={styles.benefitText}>Delivery in 2-5 days</Text>
-            </View>
-          </View>
-
-          {/* Color selection */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Color</Text>
-              <Text style={styles.sectionSub}>
-                Selected: {selectedColor}
-              </Text>
-            </View>
-            <View style={styles.chipRow}>
-              {product.colors.map((color) => {
-                const selected = selectedColor === color
-                return (
-                  <TouchableOpacity
-                    key={color}
-                    style={[
-                      styles.colorChip,
-                      selected && styles.colorChipSelected,
-                    ]}
-                    onPress={() => setSelectedColor(color)}
-                  >
-                    <Text
-                      style={[
-                        styles.colorChipText,
-                        selected && styles.colorChipTextSelected,
-                      ]}
+        {/* ------------- RECOMMEND TAB CONTENT (full-screen recommendations) ------------- */}
+        {tab === "Recommend" && (
+          <>
+            {/* Category chips above Recommend list */}
+            <View
+              style={{
+                backgroundColor: "#fff",
+                paddingTop: 12,
+                paddingBottom: 4,
+              }}
+            >
+              <RNScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 16 }}
+              >
+                {RECOMMEND_CATEGORIES.map((cat) => {
+                  const active = activeRecommendCategory === cat;
+                  return (
+                    <View
+                      key={cat}
+                      style={{ marginRight: 10, marginBottom: 4 }}
                     >
-                      {color}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
+                      <Text
+                        onPress={() => setActiveRecommendCategory(cat)}
+                        style={{
+                          paddingHorizontal: 14,
+                          paddingVertical: 6,
+                          borderRadius: 20,
+                          borderWidth: active ? 0 : 1,
+                          borderColor: "#ddd",
+                          backgroundColor: active ? "#111" : "#f4f4f4",
+                          color: active ? "#fff" : "#333",
+                          fontSize: 13,
+                          fontWeight: active ? "700" : "500",
+                        }}
+                      >
+                        {cat}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </RNScrollView>
             </View>
-          </View>
 
-          {/* Quantity */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Quantity</Text>
-            </View>
-            <View style={styles.quantityRow}>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() =>
-                  setQuantity((prev) => Math.max(1, prev - 1))
-                }
-              >
-                <FontAwesome name='minus' size={16} color='#444' />
-              </TouchableOpacity>
-              <Text style={styles.qtyValue}>{quantity}</Text>
-              <TouchableOpacity
-                style={styles.qtyBtn}
-                onPress={() => setQuantity((prev) => prev + 1)}
-              >
-                <FontAwesome name='plus' size={16} color='#444' />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Description */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Description</Text>
-            <Text style={styles.descriptionText}>
-              {product.description}
-            </Text>
-          </View>
-
-          {/* Features list */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Key features</Text>
-            {product.features.map((feature, idx) => (
-              <View key={idx} style={styles.featureRow}>
-                <View style={styles.featureIconCircle}>
-                  <FontAwesome
-                    name='check'
-                    size={12}
-                    color='#ffffff'
-                  />
-                </View>
-                <Text style={styles.featureText}>{feature}</Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Maybe: more info section */}
-          <View style={styles.sectionLast}>
-            <Text style={styles.moreInfoTitle}>Secure checkout</Text>
-            <Text style={styles.moreInfoText}>
-              All payments are encrypted. You can track your order in
-              real time and contact support 24/7 from your Mukulah
-              account.
-            </Text>
-          </View>
-        </View>
+            <ProductRecommendations
+              title={activeRecommendCategory}
+              products={mockRecommendations}
+              onPressProduct={(id) => {
+                console.log("Open recommended product", id);
+              }}
+            />
+          </>
+        )}
       </ScrollView>
 
-      {/* Bottom sticky bar */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={styles.cartIconBtn}
-          onPress={() => router.push('/(shop)/cart')}
-        >
-          <FontAwesome name='shopping-cart' size={20} color='#2E8C83' />
-          <Text style={styles.cartIconText}>Cart</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={handleAddToCart}
-        >
-          <Text style={styles.addBtnText}>Add to Cart</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.buyBtn}
-          onPress={handleBuyNow}
-        >
-          <Text style={styles.buyBtnText}>Buy Now</Text>
-        </TouchableOpacity>
-      </View>
+      {/* BOTTOM BAR (shop + heart + big Add to Cart) */}
+      <ProductBottomBar
+        price={mockProduct.price}
+        onAddToCart={handleAddToCart}
+        onGoShop={() => console.log("Go to shop")}
+        onToggleFavorite={() => console.log("Toggle favorite")}
+      />
     </View>
-  )
+  );
 }
-
-export default ProductSlug
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f6f6fb',
-  },
-
-  // HERO
-  heroWrapper: {
-    width,
-    height: width * 1.1,
-    backgroundColor: '#000',
-  },
-  heroImage: {
-    width,
-    height: width * 1.1,
-  },
-  heroTopIcons: {
-    position: 'absolute',
-    top: 40,
-    right: 16,
-    flexDirection: 'row',
-    gap: 10,
-  },
-  heroIconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageDots: {
-    position: 'absolute',
-    bottom: 16,
-    alignSelf: 'center',
-    flexDirection: 'row',
-    gap: 6,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  },
-  activeDot: {
-    width: 14,
-    borderRadius: 7,
-    backgroundColor: '#ffffff',
-  },
-  imageCounter: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  imageCounterText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '600',
-  },
-
-  // CONTENT
-  content: {
-    paddingHorizontal: 14,
-    paddingTop: 14,
-    paddingBottom: 26,
-    backgroundColor: '#ffffff',
-    marginTop: 6,
-  },
-  productName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: 8,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  price: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#e0004d',
-    marginRight: 8,
-  },
-  originalPrice: {
-    fontSize: 13,
-    color: '#999',
-    textDecorationLine: 'line-through',
-    marginRight: 8,
-  },
-  discountTag: {
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: 6,
-    backgroundColor: '#ffe5ec',
-  },
-  discountTagText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#e0004d',
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    marginRight: 6,
-  },
-  ratingText: {
-    fontSize: 11,
-    color: '#666',
-  },
-
-  benefitStrip: {
-    borderRadius: 10,
-    backgroundColor: '#f9fafc',
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#eef0f5',
-    marginBottom: 14,
-  },
-  benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  benefitText: {
-    marginLeft: 6,
-    fontSize: 11,
-    color: '#555',
-  },
-
-  section: {
-    paddingVertical: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#f0f0f0',
-  },
-  sectionLast: {
-    paddingVertical: 14,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#f0f0f0',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginBottom: 6,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#111',
-  },
-  sectionSub: {
-    fontSize: 11,
-    color: '#777',
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  colorChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#fff',
-  },
-  colorChipSelected: {
-    borderColor: '#111',
-    backgroundColor: '#111',
-  },
-  colorChipText: {
-    fontSize: 12,
-    color: '#444',
-  },
-  colorChipTextSelected: {
-    color: '#ffffff',
-    fontWeight: '600',
-  },
-
-  quantityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  qtyBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    backgroundColor: '#f8f8f8',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  qtyValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginHorizontal: 16,
-    minWidth: 24,
-    textAlign: 'center',
-  },
-
-  descriptionText: {
-    fontSize: 13,
-    lineHeight: 20,
-    color: '#555',
-    marginTop: 4,
-  },
-
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  featureIconCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#2E8C83',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  featureText: {
-    fontSize: 13,
-    color: '#444',
-    flex: 1,
-  },
-
-  moreInfoTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: 4,
-  },
-  moreInfoText: {
-    fontSize: 12,
-    lineHeight: 18,
-    color: '#666',
-  },
-
-  // BOTTOM BAR
-  bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#ffffff',
-    borderTopWidth: 1,
-    borderTopColor: '#e6e6e6',
-  },
-  cartIconBtn: {
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  cartIconText: {
-    fontSize: 10,
-    color: '#2E8C83',
-    marginTop: 2,
-  },
-  addBtn: {
-    flex: 1,
-    marginRight: 8,
-    paddingVertical: 10,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: '#2E8C83',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#2E8C83',
-  },
-  buyBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: '#2E8C83',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buyBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#ffffff',
-  },
-})

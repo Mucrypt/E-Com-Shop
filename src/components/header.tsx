@@ -96,9 +96,9 @@ const Header: React.FC<HeaderProps> = ({
         )}
 
         {showCart && (
-          <TouchableOpacity
-            style={styles.cartBtn}
-            onPress={() => router.push('/(shop)/cart')}
+              <TouchableOpacity
+                style={styles.cartBtn}
+                onPress={() => router.push('/cart')}
           >
             <FontAwesome name='shopping-cart' size={20} color='#666' />
             {cartCount > 0 && (

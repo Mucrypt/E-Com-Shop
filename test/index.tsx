@@ -1,3 +1,4 @@
+//src/app/product/index.tsx
 import {
   View,
   Text,

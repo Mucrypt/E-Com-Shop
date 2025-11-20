@@ -5,7 +5,6 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { AppProviders } from '../providers'
 import QueryProvider from '../providers/tanstack-api/query-providers'
-import { AuthProvider } from '../contexts/AuthContext'
 import { useCartStore } from '../store'
 import { SidebarProvider, useSidebar } from '../contexts/SidebarContext'
 
@@ -15,7 +14,7 @@ const MukulahHeader: React.FC = () => {
   const { toggle } = useSidebar()
 
   const goToCart = () => {
-    router.push('/(shop)/cart')
+    router.push('/cart')
   }
 
   const goToProfile = () => {
@@ -73,8 +72,7 @@ export default function RootLayout() {
     <QueryProvider>
       <SidebarProvider>
         <AppProviders>
-          <AuthProvider>
-            <Stack>
+          <Stack>
               <Stack.Screen name='splash' options={{ headerShown: false }} />
               <Stack.Screen name='start' options={{ headerShown: false }} />
               <Stack.Screen
@@ -121,6 +119,10 @@ export default function RootLayout() {
                 options={{ title: 'Product Details', headerShown: false }}
               />
               <Stack.Screen
+                name='cart'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name='+not-found'
                 options={{
                   title: 'Not Found',
@@ -131,7 +133,6 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
-          </AuthProvider>
         </AppProviders>
       </SidebarProvider>
     </QueryProvider>

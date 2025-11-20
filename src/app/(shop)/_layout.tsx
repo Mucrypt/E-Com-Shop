@@ -126,7 +126,7 @@ const TabsLayout: React.FC = () => {
             }}
           />
 
-          {/* RIGHT SIDE – Shop & Orders */}
+          {/* RIGHT SIDE – Shop & Media */}
           <Tabs.Screen
             name='shop'
             options={{
@@ -138,11 +138,11 @@ const TabsLayout: React.FC = () => {
           />
 
           <Tabs.Screen
-            name='orders'
+            name='media-bridge'
             options={{
-              title: 'Orders',
+              title: 'Media',
               tabBarIcon: (props) => (
-                <TabBarIcon name='book' color={props.color} />
+                <TabBarIcon name='play-circle' color={props.color} />
               ),
             }}
           />
