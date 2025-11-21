@@ -1,5 +1,5 @@
 // app/(shop)/product/[slug].tsx
-import React, { useState } from "react";
+import React from "react";
 import { View, ScrollView, Text, StatusBar, ScrollView as RNScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 
@@ -15,6 +15,11 @@ import ProductRecommendations, {
   RecommendProduct,
 } from "../../components/premium/ProductRecommendations";
 import ProductBottomBar from "../../components/premium/ProductBottomBar";
+
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../../lib/supabase";
+import type { Tables } from "../../types/database.types";
+
 
 const GOLD = "#D4AF37";
 
@@ -100,16 +105,85 @@ const RECOMMEND_CATEGORIES = [
   "More Jackets",
 ];
 
+
+
+type ProductRow = Tables<"products">;
+
 export default function ProductSlugScreen() {
-  const { slug } = useLocalSearchParams();
+  const { slug } = useLocalSearchParams<{ slug?: string }>();
   const [tab, setTab] = useState<"Goods" | "Reviews" | "Recommend">("Goods");
-  const [selectedColor, setSelectedColor] = useState(mockProduct.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(mockProduct.sizes[2]);
+  const [product, setProduct] = useState<ProductRow | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const [activeRecommendCategory, setActiveRecommendCategory] = useState("For You");
 
+  useEffect(() => {
+    let isMounted = true;
+    async function loadProduct() {
+      if (!slug) {
+        setError("Missing product id");
+        setLoading(false);
+        return;
+      }
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", slug)
+          .maybeSingle<ProductRow>();
+        if (!isMounted) return;
+        if (error || !data) {
+          setError(error?.message || "Product not found");
+        } else {
+          setProduct(data);
+        }
+      } catch (e: any) {
+        if (!isMounted) return;
+        setError(e?.message || "Failed to load product");
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    loadProduct();
+    return () => {
+      isMounted = false;
+    };
+  }, [slug]);
+
+  const productName = product?.name ?? mockProduct.name;
+  const productPrice = product?.price ?? mockProduct.price;
+  const productOldPrice = product?.original_price ?? mockProduct.oldPrice;
+  /**
+   * Memoized computation of product images array.
+   * 
+   * This hook attempts to extract an array of image URLs from the `product` object using the following logic:
+   * - If `product.images` exists and is an array, it returns it as a string array.
+   * - If `product.images` is an object, it tries to access the `urls` property and returns it if it's a non-empty string array.
+   * - If `product.image_url` exists, it returns an array containing that single URL.
+   * - If none of the above, it falls back to `mockProduct.images`.
+   * 
+   * @param product - The product object which may contain images in various formats.
+   * @returns An array of image URLs for the product.
+   */
+  const productImages = useMemo(() => {
+    if (product?.images && Array.isArray(product.images)) {
+      return product.images as string[];
+    }
+    if (typeof product?.images === "object" && product?.images !== null) {
+      const maybe = (product.images as any).urls as string[] | undefined;
+      if (maybe?.length) return maybe;
+    }
+    if (product?.image_url) return [product.image_url];
+    return mockProduct.images;
+  }, [product]);
+
   const handleAddToCart = () => {
-    // integrate with your cart later
-    console.log("Add to cart:", mockProduct.id, selectedColor, selectedSize);
+    const id = product?.id ?? mockProduct.id;
+    console.log("Add to cart:", id, selectedColor, selectedSize);
   };
 
   const [hasAutoOpenedRecommend, setHasAutoOpenedRecommend] = useState(false);
@@ -142,7 +216,7 @@ export default function ProductSlugScreen() {
         onMomentumScrollEnd={handleScrollEnd}
       >
         {/* HERO CAROUSEL */}
-        <ProductCarousel images={mockProduct.images} />
+        <ProductCarousel images={productImages} />
 
         {/* TABS (Goods | Reviews | Recommend) */}
         <ProductTabs active={tab} onChange={(key) => setTab(key as any)} />
@@ -158,8 +232,8 @@ export default function ProductSlugScreen() {
           }}
         >
           <ProductPriceBlock
-            price={mockProduct.price}
-            oldPrice={mockProduct.oldPrice}
+            price={productPrice}
+            oldPrice={productOldPrice}
             discount={mockProduct.discount}
           />
 
@@ -172,7 +246,7 @@ export default function ProductSlugScreen() {
                 marginBottom: 6,
               }}
             >
-              {mockProduct.name}
+              {productName}
             </Text>
 
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -188,8 +262,8 @@ export default function ProductSlugScreen() {
           <>
             {/* VARIANTS */}
             <ProductVariants
-              colors={mockProduct.colors}
-              sizes={mockProduct.sizes}
+                colors={mockProduct.colors}
+                sizes={mockProduct.sizes}
               selectedColor={selectedColor}
               selectedSize={selectedSize}
               onSelectColor={setSelectedColor}
@@ -323,7 +397,7 @@ export default function ProductSlugScreen() {
 
       {/* BOTTOM BAR (shop + heart + big Add to Cart) */}
       <ProductBottomBar
-        price={mockProduct.price}
+        price={productPrice}
         onAddToCart={handleAddToCart}
         onGoShop={() => console.log("Go to shop")}
         onToggleFavorite={() => console.log("Toggle favorite")}

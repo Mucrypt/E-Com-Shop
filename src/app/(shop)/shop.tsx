@@ -22,6 +22,8 @@ import {
 } from '../../api/server/api'
 import { Header } from '../../components'
 import FloatingSearchBar from '../../components/layout/FloatingSearchBar'
+import { visualSearchPipeline } from '../../services/imageSearchService'
+import type { VisualSearchPipelineResult } from '../../types/image-search'
 
 
 
@@ -40,7 +42,9 @@ const getImage = (item: any, fallbackIndex: number) =>
   `https://picsum.photos/seed/shop_${fallbackIndex}/600/800`
 
 const ShopScreen: React.FC = () => {
-const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] = useState('')
+  const [loadingImageSearch, setLoadingImageSearch] = useState(false)
+  const [visualSearchResult, setVisualSearchResult] = useState<VisualSearchPipelineResult | null>(null)
 
   // Dynamic data
   const {
@@ -73,19 +77,40 @@ const [searchText, setSearchText] = useState('')
   // Filtered grid section (simple for now)
   const gridProducts = allProducts
 
+  async function handleImageSearch() {
+    if (loadingImageSearch) return
+    setLoadingImageSearch(true)
+    try {
+      const result = await visualSearchPipeline()
+      setVisualSearchResult(result)
+      if (result?.classification?.topLabel?.label) {
+        setSearchText(result.classification.topLabel.label)
+      }
+    } catch (e) {
+      console.warn('Visual search failed', e)
+    } finally {
+      setLoadingImageSearch(false)
+    }
+  }
+
+  function clearVisualSearch() {
+    setVisualSearchResult(null)
+  }
+
   return (
     <View style={styles.screen}>
       <StatusBar style='dark' />
       {/* Global Shein-style header with sidebar/search/cart */}
-  <FloatingSearchBar
-    inline
-    value={searchText}
-    onChange={setSearchText}
-    suggestions={['Shoes','Jackets','Phones','Watches']}
-    onAIPress={() => router.push('/ai-search')}
-    onVoicePress={() => console.log('voice')}
-    onCartPress={() => router.push('/cart')}
-  />
+      <FloatingSearchBar
+        inline
+        value={searchText}
+        onChange={setSearchText}
+        suggestions={['Shoes','Jackets','Phones','Watches']}
+        onAIPress={() => router.push('/ai-search')}
+        onVoicePress={() => console.log('voice')}
+        onImagePress={handleImageSearch}
+        loadingImageSearch={loadingImageSearch}
+      />
 
     
 
@@ -342,6 +367,48 @@ const [searchText, setSearchText] = useState('')
                 )
               })}
         </ScrollView>
+
+        {/* VISUAL SEARCH RESULT PREVIEW (if any) */}
+        {visualSearchResult && (
+          <View style={styles.visualSearchContainer}>
+            <View style={styles.visualSearchHeader}>
+              <Text style={styles.sectionTitle}>Visual Matches</Text>
+              <TouchableOpacity onPress={clearVisualSearch}>
+                <Text style={styles.sectionLink}>Clear</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.horizontalProductScroller}
+              contentContainerStyle={{ paddingLeft: 16, paddingRight: 8 }}
+            >
+              {visualSearchResult.matches.map((m) => (
+                <TouchableOpacity
+                  key={m.product_id}
+                  style={styles.dealCard}
+                  activeOpacity={0.95}
+                  onPress={() => router.push(`/product/${m.product_id}`)}
+                >
+                  <Image
+                    source={{ uri: m.image_url || `https://picsum.photos/seed/vs_${m.product_id}/400/400` }}
+                    style={styles.dealImage}
+                  />
+                  <View style={styles.dealInfo}>
+                    <Text style={styles.dealName} numberOfLines={2}>{m.name || 'Product'}</Text>
+                    <View style={styles.dealPriceRow}>
+                      {m.price && <Text style={styles.dealPrice}>{formatPrice(m.price)}</Text>}
+                      <Text style={styles.dealOriginalPrice}>Score {(m.score * 100).toFixed(0)}%</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            {visualSearchResult.usedFallbackTextSearch && (
+              <Text style={styles.fallbackNote}>Used fallback keyword search (embedding unavailable).</Text>
+            )}
+          </View>
+        )}
 
         {/* MAIN PRODUCT GRID (like Shein “Per Te” grid) */}
         <View style={styles.sectionHeaderRow}>
@@ -917,5 +984,22 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 13,
     color: '#777',
+  },
+  // Visual search styles
+  visualSearchContainer: {
+    marginTop: 8,
+  },
+  visualSearchHeader: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  fallbackNote: {
+    paddingHorizontal: 16,
+    marginTop: 6,
+    fontSize: 12,
+    color: '#666',
   },
 })

@@ -20,7 +20,9 @@ interface Props {
   onSubmit?: () => void
   onAIPress?: () => void
   onVoicePress?: () => void
-  onCartPress?: () => void
+  onCartPress?: () => void // legacy (will trigger if onImagePress not provided)
+  onImagePress?: () => void // new: trigger image upload / visual search
+  loadingImageSearch?: boolean // show spinner while pipeline runs
   inline?: boolean // render in normal flow below header instead of floating absolute
 }
 
@@ -33,6 +35,8 @@ export default function FloatingSearchBar({
   onAIPress,
   onVoicePress,
   onCartPress,
+  onImagePress,
+  loadingImageSearch = false,
   inline = false,
 }: Props) {
   const [focused, setFocused] = useState(false)
@@ -125,13 +129,27 @@ export default function FloatingSearchBar({
             </TouchableOpacity>
           )}
 
-          {/* CART BUTTON */}
-          <TouchableOpacity onPress={onCartPress}>
-            <FontAwesome
-              name="shopping-cart"
-              size={18}
-              color="#555"
-            />
+          {/* IMAGE SEARCH BUTTON (replaces cart) */}
+          <TouchableOpacity
+            onPress={onImagePress || onCartPress}
+            accessibilityRole='button'
+            accessibilityLabel='Image search'
+          >
+            {loadingImageSearch ? (
+              <FontAwesome
+                name="spinner"
+                size={18}
+                color="#777"
+                style={{ marginLeft: 4 }}
+              />
+            ) : (
+              <FontAwesome
+                name="camera"
+                size={18}
+                color="#555"
+                style={{ marginLeft: 4 }}
+              />
+            )}
           </TouchableOpacity>
         </View>
       </Animated.View>
