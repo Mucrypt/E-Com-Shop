@@ -71,13 +71,7 @@ const TabsLayout: React.FC = () => {
             headerShown: false,
           }}
         >
-          {/* Keep cart, profile & favorites routes, but hide them from the bar */}
-          <Tabs.Screen
-            name='cart'
-            options={{
-              href: null,
-            }}
-          />
+          {/* Hidden profile & favorites routes (cart is a top-level stack) */}
           <Tabs.Screen
             name='profile'
             options={{

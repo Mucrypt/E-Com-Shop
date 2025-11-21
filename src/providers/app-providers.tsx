@@ -3,6 +3,7 @@ import { ToastProvider } from 'react-native-toast-notifications'
 import AuthProvider from './auth-provider'
 import AppStateProvider from './app-state-provider'
 import ProductProvider from './product-provider'
+import CartSyncProvider from './cart-sync-provider'
 import SessionProvider from './session-provider'
 import { DarkModeProvider } from '../contexts/DarkModeContext'
 
@@ -38,7 +39,9 @@ export default function AppProviders({ children }: AppProvidersProps) {
         <AppStateProvider>
           <AuthProvider>
             <SessionProvider>
-              <ProductProvider>{children}</ProductProvider>
+              <ProductProvider>
+                <CartSyncProvider>{children}</CartSyncProvider>
+              </ProductProvider>
             </SessionProvider>
           </AuthProvider>
         </AppStateProvider>

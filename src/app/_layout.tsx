@@ -1,5 +1,6 @@
 // app/_layout.tsx
 import React from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, useRouter } from 'expo-router'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
@@ -69,10 +70,11 @@ const MukulahHeader: React.FC = () => {
 
 export default function RootLayout() {
   return (
-    <QueryProvider>
-      <SidebarProvider>
-        <AppProviders>
-          <Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryProvider>
+        <SidebarProvider>
+          <AppProviders>
+            <Stack>
               <Stack.Screen name='splash' options={{ headerShown: false }} />
               <Stack.Screen name='start' options={{ headerShown: false }} />
               <Stack.Screen
@@ -123,6 +125,10 @@ export default function RootLayout() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen
+                name='checkout'
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name='+not-found'
                 options={{
                   title: 'Not Found',
@@ -133,9 +139,10 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
-        </AppProviders>
-      </SidebarProvider>
-    </QueryProvider>
+          </AppProviders>
+        </SidebarProvider>
+      </QueryProvider>
+    </GestureHandlerRootView>
   )
 }
 

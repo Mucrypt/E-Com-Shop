@@ -30,6 +30,8 @@ interface CartState {
   isItemInCart: (id: string) => boolean
   getItemQuantity: (id: string) => number
   getSelectedItemsTotal: (selectedIds: string[]) => number
+  setCartItems: (items: CartItem[]) => void
+  replaceFromBackend: (items: { product_id: string; quantity: number; price: number }[]) => void
 }
 
 // Initial sample cart items for testing
@@ -171,6 +173,27 @@ export const useCartStore = create<CartState>()(
         return get()
           .cartItems.filter((item) => selectedIds.includes(item.id))
           .reduce((total, item) => total + item.price * item.quantity, 0)
+      },
+      setCartItems: (items: CartItem[]) => {
+        set(() => ({ cartItems: items }), false, 'setCartItems')
+      },
+      replaceFromBackend: (items: { product_id: string; quantity: number; price: number }[]) => {
+        set(() => ({
+          cartItems: items.map((row, idx) => ({
+            id: row.product_id, // assuming product_id matches CartItem id
+            name: 'Product', // placeholder; should be hydrated separately
+            price: Number(row.price),
+            originalPrice: Number(row.price),
+            quantity: row.quantity,
+            color: 'N/A',
+            size: 'N/A',
+            image: 'placeholder',
+            inStock: true,
+            category: 'general',
+            rating: 0,
+            estimatedDelivery: '—',
+          })),
+        }), false, 'replaceFromBackend')
       },
     })),
     {

@@ -1,4 +1,3 @@
-// src//app//cart/index.tsx
 import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
@@ -75,6 +74,195 @@ const mockRecommendations: RecommendItem[] = [
   },
 ];
 
+// ─────────────────────────────
+// Cart item row component
+// ─────────────────────────────
+
+type CartItemRowProps = {
+  item: CartItem;
+  isSelected: boolean;
+  toggleItem: (id: string) => void;
+  handleQuantityChange: (id: string, delta: 1 | -1) => void;
+  handleRemoveItem: (id: string) => void;
+};
+
+const CartItemRow: React.FC<CartItemRowProps> = ({
+  item,
+  isSelected,
+  toggleItem,
+  handleQuantityChange,
+  handleRemoveItem,
+}) => {
+  const minusScale = useRef(new Animated.Value(1)).current;
+  const plusScale = useRef(new Animated.Value(1)).current;
+
+  const bounce = (scale: Animated.Value) => {
+    Animated.sequence([
+      Animated.timing(scale, {
+        toValue: 1.1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const hasDiscount = item.originalPrice && item.originalPrice > item.price;
+  const discountPct = hasDiscount
+    ? Math.round(
+        ((item.originalPrice! - item.price) / item.originalPrice!) * 100,
+      )
+    : 0;
+
+  const renderRightActions = () => (
+    <TouchableOpacity
+      style={styles.swipeDelete}
+      onPress={() => handleRemoveItem(item.id)}
+      activeOpacity={0.85}
+    >
+      <FontAwesome name="trash-o" size={18} color="#fff" />
+      <Text style={styles.swipeDeleteText}>Delete</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <Swipeable renderRightActions={renderRightActions}>
+      <View style={styles.cartCard}>
+        {/* LEFT COLUMN: check + image */}
+        <View style={styles.cartLeft}>
+          <TouchableOpacity
+            onPress={() => toggleItem(item.id)}
+            style={[styles.checkbox, isSelected && styles.checkboxSelected]}
+          >
+            {isSelected && (
+              <FontAwesome name="check" size={12} color="#fff" />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push(`/product/${item.id}`)}
+            activeOpacity={0.9}
+          >
+            <Image
+              source={{ uri: item.image }}
+              style={styles.cartImage}
+              resizeMode="cover"
+            />
+            {item.inStock === false && (
+              <View style={styles.cartBadgeOverlay}>
+                <Text style={styles.cartBadgeText}>Sold out</Text>
+              </View>
+            )}
+            {hasDiscount && (
+              <View style={styles.cartBadgeDiscount}>
+                <Text style={styles.cartBadgeDiscountText}>
+                  -{discountPct}%
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* RIGHT COLUMN: info */}
+        <View style={styles.cartRight}>
+          <View style={styles.cartTitleRow}>
+            <Text style={styles.cartTitle} numberOfLines={2}>
+              {item.name}
+            </Text>
+            <TouchableOpacity
+              onPress={() => handleRemoveItem(item.id)}
+              style={styles.trashButton}
+            >
+              <FontAwesome name="trash-o" size={15} color="#666" />
+            </TouchableOpacity>
+          </View>
+
+          {item.seller && (
+            <Text style={styles.cartSeller} numberOfLines={1}>
+              Sold by {item.seller}
+            </Text>
+          )}
+
+          {(item.color || item.size) && (
+            <View style={styles.variantRow}>
+              {item.color && (
+                <View style={styles.variantTag}>
+                  <Text style={styles.variantText}>{item.color}</Text>
+                </View>
+              )}
+              {item.size && (
+                <View style={styles.variantTag}>
+                  <Text style={styles.variantText}>{item.size}</Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          <View style={styles.cartBottomRow}>
+            <View>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.cartPrice}>€{item.price.toFixed(2)}</Text>
+                {hasDiscount && (
+                  <Text style={styles.cartOriginalPrice}>
+                    €{item.originalPrice!.toFixed(2)}
+                  </Text>
+                )}
+              </View>
+              {hasDiscount && (
+                <Text style={styles.cartAfterCoupon}>
+                  €{(item.price - 3).toFixed(2)} After coupon
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.cartActionsRight}>
+              <Animated.View
+                style={{ transform: [{ scale: minusScale }] }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    bounce(minusScale);
+                    handleQuantityChange(item.id, -1);
+                  }}
+                  style={styles.qtyBtn}
+                >
+                  <Text style={styles.qtyText}>-</Text>
+                </TouchableOpacity>
+              </Animated.View>
+
+              <Text style={styles.qtyValue}>{item.quantity}</Text>
+
+              <Animated.View style={{ transform: [{ scale: plusScale }] }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    bounce(plusScale);
+                    handleQuantityChange(item.id, +1);
+                  }}
+                  style={styles.qtyBtn}
+                >
+                  <Text style={styles.qtyText}>+</Text>
+                </TouchableOpacity>
+              </Animated.View>
+
+              <TouchableOpacity style={styles.heartBtn}>
+                <FontAwesome name="heart-o" size={16} color="#666" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    </Swipeable>
+  );
+};
+
+// ─────────────────────────────
+// Main cart screen
+// ─────────────────────────────
+
 const CartScreen: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const {
@@ -113,30 +301,11 @@ const CartScreen: React.FC = () => {
     );
   };
 
-  // Animated quantity control
-  const useBouncyScale = () => {
-    const scale = useRef(new Animated.Value(1)).current;
-
-    const bounce = () => {
-      Animated.sequence([
-        Animated.timing(scale, {
-          toValue: 1.1,
-          duration: 80,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scale, {
-          toValue: 1,
-          duration: 80,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    };
-
-    return { scale, bounce };
-  };
-
   const handleQuantityChange = (id: string, delta: 1 | -1) => {
-    updateQuantity(id, Math.max(1, (useCartStore.getState().getItemQuantity(id) || 1) + delta));
+    const item = cartItems.find((i) => i.id === id);
+    if (!item) return;
+    const newQty = Math.max(1, item.quantity + delta);
+    updateQuantity(id, newQty);
   };
 
   const handleRemoveItem = (id: string) => {
@@ -171,11 +340,11 @@ const CartScreen: React.FC = () => {
       return;
     }
     console.log('Proceeding to checkout…');
-    // router.push('/checkout')
+    const param = selectedIds.join(',');
+    router.push(`/checkout?items=${encodeURIComponent(param)}`);
   };
 
   // ---------- RECOMMENDATION CARD ----------
-
   const renderRecommendation = ({ item }: { item: RecommendItem }) => {
     const hasDiscount =
       item.originalPrice && item.originalPrice > item.price;
@@ -212,174 +381,23 @@ const CartScreen: React.FC = () => {
     );
   };
 
-  // ---------- CART ITEM WITH SWIPE + BOUNCY QTY ----------
-
   const renderCartItem = ({ item }: { item: CartItem }) => {
     const isSelected = selectedIds.includes(item.id);
-    const hasDiscount =
-      item.originalPrice && item.originalPrice > item.price;
-    const discountPct = hasDiscount
-      ? Math.round(
-          ((item.originalPrice! - item.price) / item.originalPrice!) * 100,
-        )
-      : 0;
-
-    const minusAnim = useBouncyScale();
-    const plusAnim = useBouncyScale();
-
-    const renderRightActions = () => (
-      <TouchableOpacity
-        style={styles.swipeDelete}
-        onPress={() => handleRemoveItem(item.id)}
-        activeOpacity={0.85}
-      >
-        <FontAwesome name="trash-o" size={18} color="#fff" />
-        <Text style={styles.swipeDeleteText}>Delete</Text>
-      </TouchableOpacity>
-    );
 
     return (
-      <Swipeable renderRightActions={renderRightActions}>
-        <View style={styles.cartCard}>
-          {/* LEFT COLUMN: check + image */}
-          <View style={styles.cartLeft}>
-            <TouchableOpacity
-              onPress={() => toggleItem(item.id)}
-              style={[
-                styles.checkbox,
-                isSelected && styles.checkboxSelected,
-              ]}
-            >
-              {isSelected && (
-                <FontAwesome name="check" size={12} color="#fff" />
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => router.push(`/product/${item.id}`)}
-              activeOpacity={0.9}
-            >
-              <Image
-                source={{ uri: item.image }}
-                style={styles.cartImage}
-                resizeMode="cover"
-              />
-              {item.inStock === false && (
-                <View style={styles.cartBadgeOverlay}>
-                  <Text style={styles.cartBadgeText}>Sold out</Text>
-                </View>
-              )}
-              {hasDiscount && (
-                <View style={styles.cartBadgeDiscount}>
-                  <Text style={styles.cartBadgeDiscountText}>
-                    -{discountPct}%
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {/* RIGHT COLUMN: info */}
-          <View style={styles.cartRight}>
-            <View style={styles.cartTitleRow}>
-              <Text style={styles.cartTitle} numberOfLines={2}>
-                {item.name}
-              </Text>
-              <TouchableOpacity
-                onPress={() => handleRemoveItem(item.id)}
-                style={styles.trashButton}
-              >
-                <FontAwesome name="trash-o" size={15} color="#666" />
-              </TouchableOpacity>
-            </View>
-
-            {item.seller && (
-              <Text style={styles.cartSeller} numberOfLines={1}>
-                Sold by {item.seller}
-              </Text>
-            )}
-
-            {(item.color || item.size) && (
-              <View style={styles.variantRow}>
-                {item.color && (
-                  <View style={styles.variantTag}>
-                    <Text style={styles.variantText}>{item.color}</Text>
-                  </View>
-                )}
-                {item.size && (
-                  <View style={styles.variantTag}>
-                    <Text style={styles.variantText}>{item.size}</Text>
-                  </View>
-                )}
-              </View>
-            )}
-
-            <View style={styles.cartBottomRow}>
-              <View>
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center' }}
-                >
-                  <Text style={styles.cartPrice}>
-                    €{item.price.toFixed(2)}
-                  </Text>
-                  {hasDiscount && (
-                    <Text style={styles.cartOriginalPrice}>
-                      €{item.originalPrice!.toFixed(2)}
-                    </Text>
-                  )}
-                </View>
-                {hasDiscount && (
-                  <Text style={styles.cartAfterCoupon}>
-                    €{(item.price - 3).toFixed(2)} After coupon
-                  </Text>
-                )}
-              </View>
-
-              <View style={styles.cartActionsRight}>
-                <Animated.View
-                  style={{ transform: [{ scale: minusAnim.scale }] }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      minusAnim.bounce();
-                      handleQuantityChange(item.id, -1);
-                    }}
-                    style={styles.qtyBtn}
-                  >
-                    <Text style={styles.qtyText}>-</Text>
-                  </TouchableOpacity>
-                </Animated.View>
-
-                <Text style={styles.qtyValue}>{item.quantity}</Text>
-
-                <Animated.View
-                  style={{ transform: [{ scale: plusAnim.scale }] }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      plusAnim.bounce();
-                      handleQuantityChange(item.id, +1);
-                    }}
-                    style={styles.qtyBtn}
-                  >
-                    <Text style={styles.qtyText}>+</Text>
-                  </TouchableOpacity>
-                </Animated.View>
-
-                <TouchableOpacity style={styles.heartBtn}>
-                  <FontAwesome name="heart-o" size={16} color="#666" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Swipeable>
+      <CartItemRow
+        item={item}
+        isSelected={isSelected}
+        toggleItem={toggleItem}
+        handleQuantityChange={handleQuantityChange}
+        handleRemoveItem={handleRemoveItem}
+      />
     );
   };
 
-  // ---------- EMPTY / GUEST CART ----------
+  // ---------- GUEST CART (only when not authenticated) ----------
 
-  if (!isAuthenticated || !hasItems) {
+  if (!isAuthenticated) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar style="dark" />
@@ -605,14 +623,27 @@ const CartScreen: React.FC = () => {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* EMPTY AUTHENTICATED PLACEHOLDER */}
+        {cartItems.length === 0 && (
+          <View style={styles.emptyAuthWrapper}>
+            <FontAwesome name="shopping-cart" size={42} color="#bbb" />
+            <Text style={styles.emptyAuthTitle}>Your cart is empty</Text>
+            <Text style={styles.emptyAuthSubtitle}>
+              Browse products and add them to your cart to see them here.
+            </Text>
+            <TouchableOpacity
+              style={styles.emptyAuthButton}
+              onPress={() => router.push('/(shop)/shop')}
+            >
+              <Text style={styles.emptyAuthButtonText}>Start Shopping</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         {/* Seller group (simple for now) */}
         <View style={styles.sellerHeaderRow}>
           <TouchableOpacity
             onPress={toggleSelectAll}
-            style={[
-              styles.checkbox,
-              allSelected && styles.checkboxSelected,
-            ]}
+            style={[styles.checkbox, allSelected && styles.checkboxSelected]}
           >
             {allSelected && (
               <FontAwesome name="check" size={12} color="#fff" />
@@ -701,10 +732,7 @@ const CartScreen: React.FC = () => {
           onPress={toggleSelectAll}
         >
           <View
-            style={[
-              styles.checkbox,
-              allSelected && styles.checkboxSelected,
-            ]}
+            style={[styles.checkbox, allSelected && styles.checkboxSelected]}
           >
             {allSelected && (
               <FontAwesome name="check" size={12} color="#fff" />
@@ -745,11 +773,45 @@ const CartScreen: React.FC = () => {
 export default CartScreen;
 
 // ---------- STYLES ----------
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f6f6fb',
+  },
+  emptyAuthWrapper: {
+    backgroundColor: '#fff',
+    marginHorizontal: 14,
+    marginTop: 18,
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ececf2',
+  },
+  emptyAuthTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#111',
+    marginTop: 12,
+  },
+  emptyAuthSubtitle: {
+    fontSize: 13,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 6,
+    marginBottom: 18,
+  },
+  emptyAuthButton: {
+    backgroundColor: '#111',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  emptyAuthButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 
   // HEADER
