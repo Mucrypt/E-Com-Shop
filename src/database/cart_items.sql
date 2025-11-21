@@ -9,6 +9,10 @@ CREATE TABLE IF NOT EXISTS cart_items (
     updated_at timestamptz DEFAULT now()
 );
 
+-- Ensure one row per (user, product) for upserts
+CREATE UNIQUE INDEX IF NOT EXISTS cart_items_user_product_unique
+  ON cart_items(user_id, product_id);
+
 -- Index for faster lookup
 CREATE INDEX IF NOT EXISTS idx_cart_items_user_id ON cart_items(user_id);
 CREATE INDEX IF NOT EXISTS idx_cart_items_product_id ON cart_items(product_id);

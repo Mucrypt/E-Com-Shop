@@ -56,7 +56,7 @@ function StripeConfirmButton({ clientSecret, orderId, confirming, setConfirming,
 
 export default function CheckoutScreen() {
   const { items } = useLocalSearchParams<{ items?: string }>()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const cartItems = useCartStore((s) => s.cartItems)
   const getSelectedItemsTotal = useCartStore((s) => s.getSelectedItemsTotal)
 
@@ -75,12 +75,11 @@ export default function CheckoutScreen() {
   useEffect(() => {
     (async () => {
       try {
-        if (!isAuthenticated) return
+        if (!isAuthenticated || !user) return
         const minimal = cartItems
           .filter((i) => selectedIds.includes(i.id))
           .map((i) => ({ id: i.id, price: i.price, quantity: i.quantity }))
-        // @ts-ignore user is defined when isAuthenticated is true
-        await upsertSelectedCartItems((user as any).id, minimal, selectedIds, supabase)
+        await upsertSelectedCartItems(user.id, minimal, selectedIds, supabase)
       } catch (e) {
         console.warn('Checkout flush failed', (e as any)?.message)
       }
@@ -134,13 +133,12 @@ export default function CheckoutScreen() {
               setLoading(true)
               setErrorMsg(null)
               setInfoMsg(null)
+              if (!user) return
               const minimal = cartItems
                 .filter((i) => selectedIds.includes(i.id))
                 .map((i) => ({ id: i.id, price: i.price, quantity: i.quantity }))
-              // @ts-ignore user is defined when isAuthenticated is true
-              await upsertSelectedCartItems((user as any).id, minimal, selectedIds, supabase)
-              // @ts-ignore user is defined when isAuthenticated is true
-              const flow = await fullCheckoutFlow((user as any).id, selectedIds, cartItems, supabase)
+              await upsertSelectedCartItems(user.id, minimal, selectedIds, supabase)
+              const flow = await fullCheckoutFlow(user.id, selectedIds, cartItems, supabase)
               setClientSecret(flow.clientSecret)
               setOrderId(flow.orderId)
               setInfoMsg('Payment intent created. You can now confirm payment.')
@@ -195,13 +193,12 @@ export default function CheckoutScreen() {
                     setErrorMsg(null)
                     setInfoMsg(null)
                     // Re-run full checkout flow to get a new intent
+                    if (!user) return
                     const minimal = cartItems
                       .filter((i) => selectedIds.includes(i.id))
                       .map((i) => ({ id: i.id, price: i.price, quantity: i.quantity }))
-                    // @ts-ignore user is defined when isAuthenticated is true
-                    await upsertSelectedCartItems((user as any).id, minimal, selectedIds, supabase)
-                    // @ts-ignore user is defined when isAuthenticated is true
-                    const flow = await fullCheckoutFlow((user as any).id, selectedIds, cartItems, supabase)
+                    await upsertSelectedCartItems(user.id, minimal, selectedIds, supabase)
+                    const flow = await fullCheckoutFlow(user.id, selectedIds, cartItems, supabase)
                     setClientSecret(flow.clientSecret)
                     setOrderId(flow.orderId)
                     setInfoMsg('New payment intent created. Please confirm again.')
