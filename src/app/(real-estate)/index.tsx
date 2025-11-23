@@ -11,7 +11,6 @@ import {
 } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
-import { NavigationHeader } from '../../components/common'
 
 const BG = '#050509'
 const CARD = '#0B0F1A'
@@ -62,26 +61,9 @@ const MOCK_PROPERTIES = [
 
 export default function ImmobilizerHome() {
   const [activeCategory, setActiveCategory] = React.useState('All properties')
-  const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   return (
     <View style={styles.root}>
-      <NavigationHeader 
-        title="Real Estate"
-        rightComponent={
-          <View style={{ flexDirection: 'row', gap: 15 }}>
-            <TouchableOpacity onPress={() => setSidebarOpen(true)}>
-              <Feather name="menu" size={20} color="#F9FAFB" />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Feather name="bell" size={18} color="#E5E7EB" />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Feather name="user" size={18} color="#E5E7EB" />
-            </TouchableOpacity>
-          </View>
-        }
-      />
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -176,72 +158,7 @@ export default function ImmobilizerHome() {
         </View>
       </ScrollView>
 
-      {/* Real Estate Sidebar */}
-      {sidebarOpen && (
-        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setSidebarOpen(false)}
-            style={{
-              ...StyleSheet.absoluteFillObject,
-              backgroundColor: 'rgba(0,0,0,0.55)',
-            }}
-          />
-          <View style={styles.sidebarPanel}>
-            <View style={styles.sidebarHeader}>
-              <View style={styles.sidebarAvatar}>
-                <Text style={styles.sidebarAvatarText}>M</Text>
-              </View>
-              <View>
-                <Text style={styles.sidebarTitle}>Mukulah Real Estate</Text>
-                <Text style={styles.sidebarSubtitle}>Your property universe</Text>
-              </View>
-            </View>
 
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionLabel}>Browse</Text>
-
-              <View style={styles.sidebarItemRow}>
-                <Feather name="home" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>All properties</Text>
-              </View>
-              <View style={styles.sidebarItemRow}>
-                <Feather name="key" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>For rent</Text>
-              </View>
-              <View style={styles.sidebarItemRow}>
-                <Feather name="dollar-sign" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>For sale</Text>
-              </View>
-              <View style={styles.sidebarItemRow}>
-                <Feather name="map-pin" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>Near you</Text>
-              </View>
-            </View>
-
-            <View style={styles.sidebarSection}>
-              <Text style={styles.sidebarSectionLabel}>My activity</Text>
-
-              <View style={styles.sidebarItemRow}>
-                <Feather name="heart" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>Saved homes</Text>
-              </View>
-              <View style={styles.sidebarItemRow}>
-                <Feather name="clipboard" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>My listings</Text>
-              </View>
-              <View style={styles.sidebarItemRow}>
-                <Feather name="bell" size={18} color="#E5E7EB" />
-                <Text style={styles.sidebarItemText}>Alerts & notifications</Text>
-              </View>
-            </View>
-
-            <View style={styles.sidebarFooter}>
-              <Text style={styles.sidebarFooterText}>Settings & Privacy</Text>
-            </View>
-          </View>
-        </View>
-      )}
     </View>
   )
 }
@@ -542,79 +459,5 @@ const styles = StyleSheet.create({
     color: ACCENT,
     fontSize: 12,
     fontWeight: '600',
-  },
-
-  /* sidebar styles */
-  sidebarPanel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 280,
-    backgroundColor: '#050509',
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: '#111827',
-    paddingHorizontal: 16,
-    paddingTop: 36,
-  },
-  sidebarHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  sidebarAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#111827',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  sidebarAvatarText: {
-    color: '#F5C451',
-    fontWeight: '700',
-    fontSize: 18,
-  },
-  sidebarTitle: {
-    color: '#F9FAFB',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  sidebarSubtitle: {
-    color: '#9CA3AF',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  sidebarSection: {
-    marginBottom: 20,
-  },
-  sidebarSectionLabel: {
-    color: '#6B7280',
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 8,
-  },
-  sidebarItemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    gap: 10,
-  },
-  sidebarItemText: {
-    color: '#E5E7EB',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  sidebarFooter: {
-    marginTop: 'auto',
-    paddingVertical: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#111827',
-  },
-  sidebarFooterText: {
-    color: '#9CA3AF',
-    fontSize: 12,
   },
 })

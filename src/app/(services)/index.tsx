@@ -12,7 +12,6 @@ import {
 import { FontAwesome } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { Colors, Spacing } from '../../constants'
-import { NavigationHeader } from '../../components/common'
 import ServiceFiltersModal, {
   ServiceFilters,
 } from '../../components/services/ServiceFiltersModal'
@@ -145,15 +144,7 @@ const ServicesHomeScreen = () => {
 
   return (
     <View style={styles.root}>
-      <NavigationHeader 
-        title="Services"
-        showBackButton={false}
-        rightComponent={
-          <TouchableOpacity onPress={() => setFiltersVisible(true)}>
-            <FontAwesome name="search" size={20} color={Colors.text.primary} />
-          </TouchableOpacity>
-        }
-      />
+
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.scrollContent}

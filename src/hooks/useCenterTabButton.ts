@@ -66,18 +66,18 @@ export const useCenterTabButton = (theme: CenterTabTheme = 'services') => {
       
       case 'realEstate':
         return {
-          iconName: 'home',
-          iconLibrary: 'Feather' as const,
-          gradient: ['#C084FC', '#A855F7'],
+          iconName: 'plus',
+          iconLibrary: 'FontAwesome' as const,
+          gradient: ['#667eea', '#764ba2'],
           size: 32,
           shadow: true,
         }
       
       case 'jobs':
         return {
-          iconName: 'briefcase',
-          iconLibrary: 'Feather' as const,
-          gradient: ['#ffecd2', '#fcb69f'],
+          iconName: 'plus',
+          iconLibrary: 'FontAwesome' as const,
+          gradient: ['#667eea', '#764ba2'],
           size: 32,
           shadow: true,
         }

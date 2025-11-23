@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { NavigationHeader } from '../../components/common'
+
 
 const { width } = Dimensions.get('window')
 
@@ -138,26 +138,6 @@ export default function JobsHomeScreen() {
 
   return (
     <View style={styles.root}>
-      <NavigationHeader 
-        title="Jobs"
-        showBackButton={false}
-        rightComponent={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <TouchableOpacity
-              onPress={() => {
-                // TODO: navigate to notifications screen
-              }}
-            >
-              <FontAwesome name='bell-o' size={18} color='#E5E7EB' />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setSidebarOpen(true)}
-            >
-              <FontAwesome name='bars' size={20} color='#E5E7EB' />
-            </TouchableOpacity>
-          </View>
-        }
-      />
       
       {/* Search Bar */}
       <View style={styles.searchSection}>

@@ -8,8 +8,11 @@ import {
   Animated,
   Easing,
 } from 'react-native'
-import { Tabs } from 'expo-router'
-import { FontAwesome5, Feather } from '@expo/vector-icons'
+import { Tabs, useRouter } from 'expo-router'
+import { FontAwesome5, Feather, FontAwesome } from '@expo/vector-icons'
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'
+import CenterTabButton from '../../components/common/CenterTabButton'
+import { useCenterTabButton } from '../../hooks/useCenterTabButton'
 
 /* -------------------------------------------------------------------------- */
 /*  Sidebar component                                                         */
@@ -52,7 +55,7 @@ const RealEstateSidebar: React.FC<RealEstateSidebarProps> = ({
 
   const translateX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [280, 0], // slide in from right
+    outputRange: [-280, 0], // slide in from left
   })
 
   return (
@@ -134,11 +137,27 @@ const RealEstateHeader: React.FC<RealEstateHeaderProps> = ({
   title,
   onMenu,
 }) => {
+  const router = useRouter()
+  const insets = useSafeAreaInsets()
+  
+  const handleSavedPress = () => {
+    router.push('/(real-estate)/saved')
+  }
+  
+  const handleProfilePress = () => {
+    router.push('/(profile)')
+  }
+  
   return (
-    <View style={styles.header}>
-      <TouchableOpacity style={styles.headerIconButton} onPress={onMenu}>
-        <Feather name="menu" size={20} color="#F9FAFB" />
-      </TouchableOpacity>
+    <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+      <View style={styles.headerLeft}>
+        <TouchableOpacity style={styles.headerIconButton} onPress={onMenu}>
+          <Feather name="menu" size={20} color="#F9FAFB" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.headerIconButton} onPress={handleSavedPress}>
+          <FontAwesome name="heart" size={18} color="#E5E7EB" />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.headerCenter}>
         <Text style={styles.headerTitle}>{title}</Text>
@@ -149,7 +168,7 @@ const RealEstateHeader: React.FC<RealEstateHeaderProps> = ({
         <TouchableOpacity style={styles.headerIconButton}>
           <Feather name="bell" size={18} color="#E5E7EB" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.headerIconButton}>
+        <TouchableOpacity style={styles.headerIconButton} onPress={handleProfilePress}>
           <Feather name="user" size={18} color="#E5E7EB" />
         </TouchableOpacity>
       </View>
@@ -161,11 +180,31 @@ const RealEstateHeader: React.FC<RealEstateHeaderProps> = ({
 /*  Layout with bottom tabs + sidebar                                         */
 /* -------------------------------------------------------------------------- */
 
+type TabIconProps = {
+  name: React.ComponentProps<typeof FontAwesome>['name']
+  focused: boolean
+  color: string
+}
+
+const TabIcon = ({ name, focused, color }: TabIconProps) => (
+  <View style={styles.iconWrapper}>
+    <FontAwesome name={name} size={18} color={color} />
+  </View>
+)
+
 export default function RealEstateLayout() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const router = useRouter()
+  const centerButtonConfig = useCenterTabButton('realEstate')
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#050509' }}>
+    <SafeAreaProvider>
+      <View style={{ flex: 1, backgroundColor: '#050509' }}>
+      <RealEstateHeader
+        title="Real Estate"
+        onMenu={() => setSidebarOpen(true)}
+      />
+
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -178,37 +217,60 @@ export default function RealEstateLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="home" color={color} size={size} />
+            title: 'Real Estate',
+            tabBarLabel: 'Explore',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="building-o" color={color} focused={focused} />
             ),
           }}
         />
         <Tabs.Screen
-          name="saved"
+          name="analytics"
           options={{
-            title: 'Saved',
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="heart" color={color} size={size} />
+            title: 'Market Analytics',
+            tabBarLabel: 'Analytics',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="line-chart" color={color} focused={focused} />
             ),
           }}
         />
         <Tabs.Screen
           name="post"
           options={{
-            title: 'Post',
-            tabBarIcon: ({ color, size }) => (
-              <FontAwesome5 name="plus-square" color={color} size={size} />
+            title: 'List Property',
+            tabBarLabel: '',
+            tabBarButton: () => (
+              <CenterTabButton
+                onPress={() => router.push('/(modals)/post-center-modal')}
+                {...centerButtonConfig}
+              />
             ),
           }}
         />
         <Tabs.Screen
           name="messages"
           options={{
-            title: 'Messages',
-            tabBarIcon: ({ color, size }) => (
-              <Feather name="message-circle" color={color} size={size} />
+            title: 'Property Messages',
+            tabBarLabel: 'Messages',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="comments-o" color={color} focused={focused} />
             ),
+          }}
+        />
+        <Tabs.Screen
+          name="saved"
+          options={{
+            title: 'Back to Main',
+            tabBarLabel: 'Main',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon name="th-large" color={color} focused={focused} />
+            ),
+          }}
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              router.push('/(main)');
+            },
           }}
         />
       </Tabs>
@@ -218,7 +280,8 @@ export default function RealEstateLayout() {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-    </View>
+      </View>
+    </SafeAreaProvider>
   )
 }
 
@@ -236,6 +299,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#050509',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#111827',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerIconButton: {
     padding: 6,
@@ -267,6 +334,10 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     height: 60,
   },
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   /* sidebar */
   sidebarOverlay: {
@@ -275,13 +346,13 @@ const styles = StyleSheet.create({
   },
   sidebarPanel: {
     position: 'absolute',
-    right: 0,
+    left: 0,
     top: 0,
     bottom: 0,
     width: 280,
     backgroundColor: '#050509',
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    borderLeftColor: '#111827',
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: '#111827',
     paddingHorizontal: 16,
     paddingTop: 36,
   },
