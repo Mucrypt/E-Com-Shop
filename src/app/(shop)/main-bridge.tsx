@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 import { View } from 'react-native'
 import { router } from 'expo-router'
 
-export default function MediaBridgeScreen() {
+export default function MainBridgeScreen() {
   useEffect(() => {
-    router.replace('/(media)')
+    router.replace('/(main)')
   }, [])
 
   return <View />

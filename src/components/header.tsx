@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const handleProfilePress = () => {
     if (isAuthenticated) {
-      router.push('/(shop)/profile')
+      router.push('/(profile)') // Navigate to profile route group
     } else {
       router.push('/auth')
     }

@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Stack, useRouter } from 'expo-router'
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { AppProviders } from '../providers'
 import QueryProvider from '../providers/tanstack-api/query-providers'
 import { useCartStore } from '../store'
@@ -19,7 +20,7 @@ const MukulahHeader: React.FC = () => {
   }
 
   const goToProfile = () => {
-    router.push('/(shop)/profile')
+    router.push('/(profile)')
   }
 
   const goToFavorites = () => {
@@ -71,9 +72,10 @@ const MukulahHeader: React.FC = () => {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryProvider>
-        <SidebarProvider>
-          <AppProviders>
+      <SafeAreaProvider>
+        <QueryProvider>
+          <SidebarProvider>
+            <AppProviders>
             <Stack>
               <Stack.Screen name='splash' options={{ headerShown: false }} />
               <Stack.Screen name='start' options={{ headerShown: false }} />
@@ -106,6 +108,56 @@ export default function RootLayout() {
               <Stack.Screen
                 name='(media)'
                 options={{ headerShown: false, presentation: 'modal' }}
+              />
+
+              <Stack.Screen
+                name='(crypto-hub)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(main)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(jobs)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(services)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(real-estate)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(travel)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(sports-live)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(modals)'
+                options={{ headerShown: false, presentation: 'modal' }}
+              />
+
+              <Stack.Screen
+                name='(post)'
+                options={{ headerShown: false }}
+              />
+
+              <Stack.Screen
+                name='(profile)'
+                options={{ headerShown: false }}
               />
 
               <Stack.Screen
@@ -142,6 +194,7 @@ export default function RootLayout() {
           </AppProviders>
         </SidebarProvider>
       </QueryProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   )
 }

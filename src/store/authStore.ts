@@ -193,7 +193,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           authError: null,
         })
-        router.replace('/(shop)')
+        router.replace('/start')
       },
 
       forgotPassword: async (email: string) => {

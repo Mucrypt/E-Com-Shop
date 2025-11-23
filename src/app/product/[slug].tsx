@@ -262,12 +262,12 @@ export default function ProductSlugScreen() {
           <>
             {/* VARIANTS */}
             <ProductVariants
-                colors={mockProduct.colors}
-                sizes={mockProduct.sizes}
-              selectedColor={selectedColor}
-              selectedSize={selectedSize}
-              onSelectColor={setSelectedColor}
-              onSelectSize={setSelectedSize}
+              colors={mockProduct.colors}
+              sizes={mockProduct.sizes}
+              selectedColor={selectedColor ?? ""}
+              selectedSize={selectedSize ?? ""}
+              onSelectColor={(c: string) => setSelectedColor(c)}
+              onSelectSize={(s: string) => setSelectedSize(s)}
             />
 
             {/* ACCORDIONS / SECTIONS */}

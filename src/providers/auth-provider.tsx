@@ -124,9 +124,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
       // Handle navigation based on auth state with a small delay to avoid useInsertionEffect warnings
       if (event === 'SIGNED_IN') {
-        // Navigate to protected area after sign in
+        // Navigate to main app after sign in
         setTimeout(() => {
-          router.replace('/(shop)')
+          router.replace('/(main)')
         }, 100)
       } else if (event === 'SIGNED_OUT') {
         // Navigate to start screen when signed out or session expires

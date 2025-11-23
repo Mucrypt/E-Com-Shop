@@ -71,7 +71,7 @@ const Auth = () => {
     if (isLogin) {
       result = await signIn(email, password)
       if (!result.error) {
-        router.replace('/(shop)/')
+        router.replace('/(main)/')
       } else {
         setAuthError(result.error.message)
       }

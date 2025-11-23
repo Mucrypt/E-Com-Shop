@@ -265,7 +265,13 @@ const Home = () => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-     
+      {/* Header */}
+      <Header 
+        showProfile={true} 
+        showNotifications={true} 
+        showCart={true}
+        backgroundColor="#f8f9fa"
+      />
 
       {/* Search Bar */}
       <TouchableOpacity

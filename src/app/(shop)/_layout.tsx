@@ -71,13 +71,7 @@ const TabsLayout: React.FC = () => {
             headerShown: false,
           }}
         >
-          {/* Hidden profile & favorites routes (cart is a top-level stack) */}
-          <Tabs.Screen
-            name='profile'
-            options={{
-              href: null,
-            }}
-          />
+          {/* Hidden routes */}
           <Tabs.Screen
             name='favorites'
             options={{
@@ -86,6 +80,9 @@ const TabsLayout: React.FC = () => {
           />
 
           {/* LEFT – Home */}
+
+
+          {/* LEFT – Shop Home */}
           <Tabs.Screen
             name='index'
             options={{
@@ -102,7 +99,7 @@ const TabsLayout: React.FC = () => {
             options={{
               title: 'Categories',
               tabBarIcon: (props) => (
-                <TabBarIcon name='th-large' color={props.color} />
+                <TabBarIcon name='list' color={props.color} />
               ),
             }}
           />
@@ -132,12 +129,19 @@ const TabsLayout: React.FC = () => {
           />
 
           <Tabs.Screen
-            name='media-bridge'
+            name='main-bridge'
             options={{
-              title: 'Media',
+              title: 'Main',
               tabBarIcon: (props) => (
-                <TabBarIcon name='play-circle' color={props.color} />
+                <TabBarIcon name='th-large' color={props.color} />
               ),
+            }}
+            listeners={{
+              tabPress: (e) => {
+                e.preventDefault();
+                // Navigate to main app
+                require('expo-router').router.push('/(main)');
+              },
             }}
           />
         </Tabs>
