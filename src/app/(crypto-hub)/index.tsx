@@ -9,6 +9,7 @@ import {
   TextInput,
 } from 'react-native'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 import { NavigationHeader } from '../../components/common'
 
 const earnProducts = [
@@ -29,6 +30,11 @@ export default function CryptoHubHome() {
   const [activeTop, setActiveTop] = useState<'earn' | 'trading' | 'launchpool'>(
     'earn',
   )
+  const router = useRouter()
+
+  const handleProfilePress = () => {
+    router.push('/(profile)')
+  }
 
   return (
     <View style={styles.root}>
@@ -42,7 +48,7 @@ export default function CryptoHubHome() {
             <TouchableOpacity>
               <MaterialIcons name="notifications-none" size={22} color="#F5C451" />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleProfilePress}>
               <FontAwesome name="user-circle-o" size={20} color="#F5C451" />
             </TouchableOpacity>
           </View>

@@ -5,6 +5,7 @@ import { View, StyleSheet } from 'react-native'
 import { FontAwesome } from '@expo/vector-icons'
 import { Colors } from '../../constants'
 import CenterTabButton from '../../components/common/CenterTabButton'
+import { useCenterTabButton } from '../../hooks/useCenterTabButton'
 
 type IconProps = {
   name: React.ComponentProps<typeof FontAwesome>['name']
@@ -24,6 +25,7 @@ const TabIcon = ({ name, color, focused }: IconProps) => (
 
 export default function CoreLayout() {
   const router = useRouter()
+  const centerButtonConfig = useCenterTabButton('services')
 
   return (
     <Tabs
@@ -71,10 +73,7 @@ export default function CoreLayout() {
           tabBarButton: () => (
             <CenterTabButton
               onPress={() => router.push('/(modals)/post-center-modal')}
-              iconName="plus"
-              iconLibrary="FontAwesome"
-              gradient={Colors.gradients.primary}
-              size={32}
+              {...centerButtonConfig}
             />
           ),
         }}
