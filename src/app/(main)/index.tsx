@@ -25,6 +25,12 @@ import SupportingBrandsStrip from '../../components/main/SupportingBrandsStrip'
 import AboutMukulahSection from '../../components/main/AboutMukulahSection'
 import BlogHighlights from '../../components/main/BlogHighlights'
 import AdSlotBanner from '../../components/main/AdSlotBanner'
+import LiveContentFeed from '../../components/main/LiveContentFeed'
+import FeaturedCreatorsSpotlight from '../../components/main/FeaturedCreatorsSpotlight'
+import CommunityStats from '../../components/main/CommunityStats'
+import TrendingTopics from '../../components/main/TrendingTopics'
+import UserActivityFeed from '../../components/main/UserActivityFeed'
+import SocialDiscovery from '../../components/main/SocialDiscovery'
 
 const featureItems: MainFeatureItem[] = [
   {
@@ -95,6 +101,7 @@ const categoryTabs = ['Favorites', 'Hot', 'New', 'Gainers', 'Losers', 'Trends']
 export default function CoreHome() {
   const { user } = useAuth()
   const [activeCategory, setActiveCategory] = useState('Favorites')
+  const [activeSegment, setActiveSegment] = useState('Universe')
 
   const firstName =
     user?.user_metadata?.name ??
@@ -129,12 +136,25 @@ export default function CoreHome() {
         {/* Universe/Web3 segment toggle */}
         <View style={styles.segmentWrapper}>
           <View style={styles.segmentBackground}>
-            <View style={styles.segmentPillActive}>
-              <Text style={styles.segmentTextActive}>Universe</Text>
-            </View>
-            <View style={styles.segmentPillInactive}>
-              <Text style={styles.segmentTextInactive}>Web3</Text>
-            </View>
+            <TouchableOpacity 
+              style={activeSegment === 'Universe' ? styles.segmentPillActive : styles.segmentPillInactive}
+              onPress={() => setActiveSegment('Universe')}
+            >
+              <Text style={activeSegment === 'Universe' ? styles.segmentTextActive : styles.segmentTextInactive}>
+                Universe
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={activeSegment === 'Web3' ? styles.segmentPillActive : styles.segmentPillInactive}
+              onPress={() => {
+                setActiveSegment('Web3')
+                router.push('/(crypto-hub)')
+              }}
+            >
+              <Text style={activeSegment === 'Web3' ? styles.segmentTextActive : styles.segmentTextInactive}>
+                Web3
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -202,14 +222,32 @@ export default function CoreHome() {
         {/* Curated / discover sections */}
         <CuratedSections activeCategory={activeCategory} />
 
+        {/* Live content from across the ecosystem */}
+        <LiveContentFeed />
+
+        {/* Featured creators showcase */}
+        <FeaturedCreatorsSpotlight />
+
+        {/* Social discovery - people you may know */}
+        <SocialDiscovery />
+
                 {/* Brands that support Mukulah */}
         <SupportingBrandsStrip />
+
+        {/* Community metrics and activity */}
+        <CommunityStats />
+
+        {/* Trending topics across all verticals */}
+        <TrendingTopics />
 
         {/* About / hype section */}
         <AboutMukulahSection />
 
         {/* Blog / journal highlights */}
         <BlogHighlights />
+
+        {/* Social activity from your network */}
+        <UserActivityFeed />
 
         {/* Ad / campaign slot for future ad engine */}
         <AdSlotBanner />
@@ -257,6 +295,7 @@ const styles = StyleSheet.create({
   segmentWrapper: {
     flex: 1,
     alignItems: 'center',
+    marginBottom: 12,
   },
   segmentBackground: {
     flexDirection: 'row',

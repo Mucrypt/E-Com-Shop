@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const { width, height } = Dimensions.get('window')
 
@@ -30,50 +31,50 @@ interface InspirationItem {
 const inspirationData: InspirationItem[] = [
   {
     id: '1',
-    title: 'Summer Sale',
-    subtitle: 'Up to 70% Off',
-    description: 'Limited time offer on electronics and fashion',
-    icon: 'tags',
-    color: '#FF6B6B',
+    title: 'Social Commerce Revolution',
+    subtitle: 'Create & Monetize Content',
+    description: 'Share videos, earn from every interaction, build your empire',
+    icon: 'video-camera',
+    color: Colors.status.error,
     type: 'offer',
-    discount: '70%',
+    discount: 'Unlimited',
   },
   {
     id: '2',
-    title: 'Wireless Headphones',
-    subtitle: 'Premium Sound Quality',
-    description: 'Noise-cancelling wireless headphones',
-    icon: 'headphones',
-    color: '#4ECDC4',
-    type: 'product',
-    price: '$89.99',
-    originalPrice: '$149.99',
+    title: 'Crypto-Powered Economy',
+    subtitle: 'Digital Assets & Trading',
+    description: 'Trade, invest, and earn with integrated cryptocurrency hub',
+    icon: 'bitcoin',
+    color: Colors.status.success,
+    type: 'service',
+    price: 'Free Trading',
+    originalPrice: 'No Fees',
   },
   {
     id: '3',
-    title: 'Fashion & Style',
-    subtitle: 'Trending Collections',
-    description: 'Discover the latest fashion trends',
-    icon: 'shopping-bag',
-    color: '#45B7D1',
+    title: 'Global Job Market',
+    subtitle: 'Work Without Borders',
+    description: 'Find opportunities worldwide, freelance, or build your team',
+    icon: 'briefcase',
+    color: Colors.status.info,
     type: 'category',
   },
   {
     id: '4',
-    title: 'Smart Home',
-    subtitle: 'Smart Devices',
-    description: 'Transform your home with smart technology',
-    icon: 'home',
-    color: '#FFA726',
+    title: 'Travel & Experiences',
+    subtitle: 'Explore The World',
+    description: 'Book flights, hotels, experiences - all while earning rewards',
+    icon: 'plane',
+    color: Colors.primary[500],
     type: 'category',
   },
   {
     id: '5',
-    title: 'Express Delivery',
-    subtitle: 'Same Day Delivery',
-    description: 'Get your orders delivered within hours',
-    icon: 'truck',
-    color: '#AB47BC',
+    title: 'Real Estate Network',
+    subtitle: 'Property & Investment',
+    description: 'Buy, sell, rent properties globally with smart contracts',
+    icon: 'building',
+    color: Colors.special.featured,
     type: 'service',
   },
 ]
@@ -180,7 +181,7 @@ const InspirationScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='#2E8C83' />
+      <StatusBar barStyle='light-content' backgroundColor={Colors.background.primary} />
 
       {/* Fixed background */}
       <View style={styles.backgroundGradient} />
@@ -233,9 +234,9 @@ const InspirationScreen = () => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Get Inspired</Text>
+          <Text style={styles.headerTitle}>Welcome to the Future</Text>
           <Text style={styles.headerSubtitle}>
-            Discover what makes shopping with Mukulah special
+            Experience the world's most comprehensive social ecosystem
           </Text>
         </View>
 
@@ -258,7 +259,7 @@ const InspirationScreen = () => {
               <FontAwesome
                 name={currentItem.icon as any}
                 size={32}
-                color='#fff'
+                color={Colors.text.primary}
               />
             </View>
             {currentItem.type === 'offer' && currentItem.discount && (
@@ -305,14 +306,14 @@ const InspirationScreen = () => {
             >
               <Text style={styles.actionButtonText}>
                 {currentItem.type === 'offer'
-                  ? 'Shop Now'
+                  ? 'Start Creating'
                   : currentItem.type === 'product'
-                  ? 'View Product'
+                  ? 'Explore Hub'
                   : currentItem.type === 'category'
-                  ? 'Browse Category'
-                  : 'Learn More'}
+                  ? 'Discover More'
+                  : 'Join Revolution'}
               </Text>
-              <FontAwesome name='arrow-right' size={14} color='#fff' />
+              <FontAwesome name='arrow-right' size={14} color={Colors.text.primary} />
             </TouchableOpacity>
           </View>
 
@@ -327,8 +328,8 @@ const InspirationScreen = () => {
                     backgroundColor:
                       index === currentIndex
                         ? currentItem.color
-                        : 'rgba(0, 0, 0, 0.2)',
-                  },
+                        : Colors.overlay.light10,
+                  }
                 ]}
               />
             ))}
@@ -357,25 +358,25 @@ const InspirationScreen = () => {
             <FontAwesome
               name='check-circle'
               size={20}
-              color='rgba(255, 255, 255, 0.9)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Personalized recommendations</Text>
+            <Text style={styles.featureText}>AI-powered content monetization</Text>
           </View>
           <View style={styles.featureItem}>
             <FontAwesome
               name='check-circle'
               size={20}
-              color='rgba(255, 255, 255, 0.9)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Exclusive member offers</Text>
+            <Text style={styles.featureText}>Global marketplace integration</Text>
           </View>
           <View style={styles.featureItem}>
             <FontAwesome
               name='check-circle'
               size={20}
-              color='rgba(255, 255, 255, 0.9)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Priority customer support</Text>
+            <Text style={styles.featureText}>Blockchain-secured transactions</Text>
           </View>
         </View>
       </Animated.View>
@@ -412,12 +413,12 @@ const InspirationScreen = () => {
                 },
               ]}
             >
-              <FontAwesome name='spinner' size={20} color='#2E8C83' />
+              <FontAwesome name='spinner' size={20} color={Colors.background.primary} />
             </Animated.View>
           ) : (
             <>
               <Text style={styles.loginButtonText}>Login</Text>
-              <FontAwesome name='sign-in' size={18} color='#2E8C83' />
+              <FontAwesome name='sign-in' size={18} color={Colors.background.primary} />
             </>
           )}
         </TouchableOpacity>
@@ -432,7 +433,7 @@ const InspirationScreen = () => {
           <FontAwesome
             name='chevron-right'
             size={16}
-            color='rgba(255, 255, 255, 0.9)'
+            color={Colors.primary[500]}
           />
         </TouchableOpacity>
       </Animated.View>
@@ -443,7 +444,7 @@ const InspirationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.background.primary,
   },
   backgroundGradient: {
     position: 'absolute',
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.background.primary,
   },
   floatingElements: {
     position: 'absolute',
@@ -462,7 +463,7 @@ const styles = StyleSheet.create({
   },
   floatingElement: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.overlay.light10,
     borderRadius: 999,
   },
   element1: {
@@ -479,45 +480,43 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 80,
+    paddingHorizontal: Spacing[8],
+    paddingTop: Spacing[20],
     justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing[10],
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 28,
+    fontWeight: '900',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing[3],
     letterSpacing: 1,
+    lineHeight: 34,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '400',
+    color: Colors.text.primary,
     textAlign: 'center',
     lineHeight: 24,
+    opacity: 0.9,
   },
   inspirationCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 25,
-    padding: 25,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    padding: Spacing[6],
+    marginBottom: Spacing[8],
+    borderWidth: 1,
+    borderColor: Colors.border.primary,
+    ...Shadows.lg,
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
     position: 'relative',
   },
   iconContainer: {
@@ -526,173 +525,163 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Shadows.md,
   },
   discountBadge: {
     position: 'absolute',
-    top: -10,
+    top: -Spacing[3],
     right: width / 2 - 80,
-    backgroundColor: '#FF4444',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    backgroundColor: Colors.status.error,
+    paddingHorizontal: Spacing[3],
+    paddingVertical: Spacing[1],
     borderRadius: 12,
   },
   discountText: {
-    color: '#fff',
+    color: Colors.text.primary,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
   cardContent: {
     alignItems: 'center',
   },
   typeIndicator: {
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    backgroundColor: Colors.background.tertiary,
+    paddingHorizontal: Spacing[3],
+    paddingVertical: Spacing[1],
     borderRadius: 12,
-    marginBottom: 15,
+    marginBottom: Spacing[4],
   },
   typeText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
     letterSpacing: 1,
   },
   cardTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 22,
+    fontWeight: '700',
+    color: Colors.text.primary,
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: Spacing[2],
     letterSpacing: 0.5,
+    lineHeight: 28,
   },
   cardSubtitle: {
-    fontSize: 18,
-    color: '#666',
+    fontSize: 16,
+    color: Colors.text.secondary,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing[3],
     fontWeight: '600',
+    lineHeight: 20,
   },
   cardDescription: {
-    fontSize: 16,
-    color: '#777',
+    fontSize: 14,
+    color: Colors.text.muted,
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 20,
+    lineHeight: 20,
+    marginBottom: Spacing[5],
   },
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   currentPrice: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2E8C83',
-    marginRight: 10,
+    fontSize: 22,
+    fontWeight: '700',
+    color: Colors.primary[500],
+    marginRight: Spacing[3],
+    lineHeight: 26,
   },
   originalPrice: {
-    fontSize: 18,
-    color: '#999',
+    fontSize: 16,
+    color: Colors.text.muted,
     textDecorationLine: 'line-through',
+    lineHeight: 20,
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingVertical: Spacing[3],
+    paddingHorizontal: Spacing[6],
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 5,
+    ...Shadows.md,
   },
   actionButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: 8,
+    color: Colors.text.primary,
+    fontSize: 15,
+    fontWeight: '700',
+    marginRight: Spacing[2],
+    lineHeight: 18,
   },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: Spacing[4],
   },
   progressDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginHorizontal: 4,
+    marginHorizontal: Spacing[1],
   },
   progressBarContainer: {
     height: 3,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 1.5,
     overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.primary[500],
     borderRadius: 1.5,
   },
   featuresList: {
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing[3],
+    paddingHorizontal: Spacing[2],
+    paddingVertical: Spacing[2],
+    backgroundColor: Colors.overlay.light10,
+    borderRadius: 12,
   },
   featureText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginLeft: 12,
+    fontSize: 15,
+    color: Colors.text.primary,
+    marginLeft: Spacing[3],
     fontWeight: '500',
+    lineHeight: 20,
   },
   bottomContainer: {
-    paddingHorizontal: 30,
-    paddingBottom: 50,
-    paddingTop: 20,
+    paddingHorizontal: Spacing[8],
+    paddingBottom: Spacing[12],
+    paddingTop: Spacing[5],
   },
   loginButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primary[500],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
+    paddingVertical: Spacing[5],
     borderRadius: 25,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    marginBottom: Spacing[4],
+    ...Shadows.lg,
   },
   loadingButton: {
     opacity: 0.8,
   },
   loginButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginRight: 10,
+    fontSize: 17,
+    fontWeight: '700',
+    marginRight: Spacing[3],
     letterSpacing: 0.5,
-    color: '#2E8C83',
+    color: Colors.background.primary,
+    lineHeight: 20,
   },
   loadingIndicator: {
     // Additional styles for loading state if needed
@@ -701,18 +690,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: Spacing[4],
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.border.secondary,
+    backgroundColor: Colors.overlay.light10,
+    ...Shadows.sm,
   },
   laterButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 15,
+    color: Colors.text.primary,
     fontWeight: '600',
-    marginRight: 8,
+    marginRight: Spacing[2],
     letterSpacing: 0.3,
+    lineHeight: 18,
   },
 })
 

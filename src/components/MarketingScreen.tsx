@@ -13,6 +13,7 @@ import {
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const { width, height } = Dimensions.get('window')
 
@@ -40,14 +41,14 @@ interface MarketingScreenProps {
 }
 
 const MarketingScreen: React.FC<MarketingScreenProps> = ({
-  title = 'Join Mukulah',
-  subtitle = 'Unlock exclusive benefits and personalized shopping',
+  title = 'Join the Revolution',
+  subtitle = 'The world\'s first all-in-one social commerce ecosystem',
   data,
   primaryButtonText = 'Login',
   secondaryButtonText = 'Create Account',
   onPrimaryPress,
   onSecondaryPress,
-  backgroundColor = '#2E8C83',
+  backgroundColor = Colors.background.primary,
   showRegisterOption = true,
 }) => {
   const insets = useSafeAreaInsets()
@@ -280,7 +281,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                 <FontAwesome
                   name={currentItem.icon as any}
                   size={32}
-                  color='#fff'
+                  color={Colors.text.primary}
                 />
               </View>
               {currentItem.value && (
@@ -330,7 +331,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                     ? 'Claim Reward'
                     : 'Get Access'}
                 </Text>
-                <FontAwesome name='arrow-right' size={14} color='#fff' />
+                <FontAwesome name='arrow-right' size={14} color={Colors.text.primary} />
               </TouchableOpacity>
             </View>
 
@@ -345,7 +346,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                       backgroundColor:
                         index === currentIndex
                           ? currentItem.color
-                          : 'rgba(0, 0, 0, 0.2)',
+                          : Colors.overlay.light10,
                       transform: [
                         {
                           scale: index === currentIndex ? 1.2 : 1,
@@ -392,50 +393,50 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
               },
             ]}
           >
-            <Text style={styles.benefitsTitle}>Why Join Us?</Text>
+            <Text style={styles.benefitsTitle}>Why Join the Revolution?</Text>
             <View style={styles.benefitItem}>
               <View style={styles.benefitIconContainer}>
                 <FontAwesome
-                  name='star'
+                  name='rocket'
                   size={18}
-                  color='rgba(255, 255, 255, 0.9)'
+                  color={Colors.text.secondary}
                 />
               </View>
-              <Text style={styles.benefitText}>Exclusive member deals</Text>
+              <Text style={styles.benefitText}>Launch your digital empire</Text>
             </View>
             <View style={styles.benefitItem}>
               <View style={styles.benefitIconContainer}>
                 <FontAwesome
-                  name='heart'
+                  name='globe'
                   size={18}
-                  color='rgba(255, 255, 255, 0.9)'
+                  color={Colors.text.secondary}
                 />
               </View>
               <Text style={styles.benefitText}>
-                Personalized recommendations
+                Connect with global community
               </Text>
             </View>
             <View style={styles.benefitItem}>
               <View style={styles.benefitIconContainer}>
                 <FontAwesome
-                  name='gift'
+                  name='bitcoin'
                   size={18}
-                  color='rgba(255, 255, 255, 0.9)'
+                  color={Colors.text.secondary}
                 />
               </View>
               <Text style={styles.benefitText}>
-                Birthday rewards & surprises
+                Earn cryptocurrency rewards
               </Text>
             </View>
             <View style={styles.benefitItem}>
               <View style={styles.benefitIconContainer}>
                 <FontAwesome
-                  name='truck'
+                  name='bolt'
                   size={18}
-                  color='rgba(255, 255, 255, 0.9)'
+                  color={Colors.text.secondary}
                 />
               </View>
-              <Text style={styles.benefitText}>Free shipping on orders</Text>
+              <Text style={styles.benefitText}>AI-powered growth tools</Text>
             </View>
           </Animated.View>
         </ScrollView>
@@ -480,7 +481,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                   <FontAwesome
                     name='spinner'
                     size={20}
-                    color={backgroundColor}
+                    color={Colors.background.primary}
                   />
                 </Animated.View>
               ) : (
@@ -488,12 +489,12 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                   <FontAwesome
                     name='sign-in'
                     size={18}
-                    color={backgroundColor}
+                    color={Colors.background.primary}
                   />
                   <Text
                     style={[
                       styles.primaryButtonText,
-                      { color: backgroundColor },
+                      { color: Colors.background.primary },
                     ]}
                   >
                     {primaryButtonText}
@@ -512,7 +513,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
                 <FontAwesome
                   name='user-plus'
                   size={16}
-                  color='rgba(255, 255, 255, 0.9)'
+                  color={Colors.primary[500]}
                 />
                 <Text style={styles.secondaryButtonText}>
                   {secondaryButtonText}
@@ -527,7 +528,7 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
               <FontAwesome
                 name='shield'
                 size={16}
-                color='rgba(255, 255, 255, 0.7)'
+                color={Colors.primary[500]}
               />
               <Text style={styles.trustText}>Secure</Text>
             </View>
@@ -535,17 +536,17 @@ const MarketingScreen: React.FC<MarketingScreenProps> = ({
               <FontAwesome
                 name='users'
                 size={16}
-                color='rgba(255, 255, 255, 0.7)'
+                color={Colors.primary[500]}
               />
-              <Text style={styles.trustText}>10K+ Members</Text>
+              <Text style={styles.trustText}>1M+ Creators</Text>
             </View>
             <View style={styles.trustItem}>
               <FontAwesome
-                name='star'
+                name='trophy'
                 size={16}
-                color='rgba(255, 255, 255, 0.7)'
+                color={Colors.primary[500]}
               />
-              <Text style={styles.trustText}>4.8 Rating</Text>
+              <Text style={styles.trustText}>Revolutionary</Text>
             </View>
           </View>
         </Animated.View>
@@ -577,7 +578,7 @@ const styles = StyleSheet.create({
   },
   floatingElement: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.overlay.light10,
     borderRadius: 999,
   },
   element1: {
@@ -603,52 +604,49 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 20, // Add some bottom padding for spacing
+    paddingHorizontal: Spacing[6],
+    paddingTop: Spacing[5],
+    paddingBottom: Spacing[5],
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
-    paddingHorizontal: 16,
+    marginBottom: Spacing[8],
+    paddingHorizontal: Spacing[4],
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 28,
+    fontWeight: '900',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: Spacing[3],
     letterSpacing: 0.8,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowColor: Colors.overlay.dark30,
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
+    lineHeight: 34,
   },
   headerSubtitle: {
-    fontSize: 17,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 16,
+    color: Colors.text.primary,
     textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 8,
-    fontWeight: '500',
+    lineHeight: 22,
+    paddingHorizontal: Spacing[2],
+    fontWeight: '400',
+    opacity: 0.9,
   },
   marketingCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 28,
-    padding: 28,
-    marginBottom: 32,
-    marginHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 15,
+    padding: Spacing[7],
+    marginBottom: Spacing[8],
+    marginHorizontal: Spacing[2],
+    borderWidth: 1,
+    borderColor: Colors.border.primary,
+    ...Shadows.xl,
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: Spacing[6],
     position: 'relative',
   },
   iconContainer: {
@@ -657,122 +655,97 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 8,
+    ...Shadows.lg,
   },
   valueBadge: {
     position: 'absolute',
-    top: -8,
+    top: -Spacing[2],
     right: width / 2 - 90,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingHorizontal: Spacing[4],
+    paddingVertical: Spacing[2],
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    ...Shadows.md,
   },
   valueText: {
-    color: '#fff',
+    color: Colors.text.primary,
     fontSize: 13,
-    fontWeight: 'bold',
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
   cardContent: {
     alignItems: 'center',
   },
   typeIndicator: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingHorizontal: Spacing[4],
+    paddingVertical: Spacing[2],
     borderRadius: 16,
-    marginBottom: 18,
+    marginBottom: Spacing[5],
   },
   typeText: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '700',
     letterSpacing: 1.2,
   },
   cardTitle: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontSize: 22,
+    fontWeight: '700',
+    color: Colors.text.primary,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing[3],
     letterSpacing: 0.3,
+    lineHeight: 28,
   },
   cardSubtitle: {
-    fontSize: 19,
-    color: '#555',
+    fontSize: 16,
+    color: Colors.text.secondary,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: Spacing[4],
     fontWeight: '600',
+    lineHeight: 20,
   },
   cardDescription: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 14,
+    color: Colors.text.muted,
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 28,
-    paddingHorizontal: 12,
+    lineHeight: 20,
+    marginBottom: Spacing[7],
+    paddingHorizontal: Spacing[3],
     fontWeight: '400',
   },
   ctaButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
+    paddingVertical: Spacing[4],
+    paddingHorizontal: Spacing[7],
     borderRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
+    ...Shadows.md,
   },
   ctaButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: 10,
+    color: Colors.text.primary,
+    fontSize: 15,
+    fontWeight: '700',
+    marginRight: Spacing[3],
     letterSpacing: 0.3,
+    lineHeight: 18,
   },
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 18,
+    marginTop: Spacing[6],
+    marginBottom: Spacing[5],
   },
   progressDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    marginHorizontal: 6,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    marginHorizontal: Spacing[2],
+    ...Shadows.sm,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 2,
     overflow: 'hidden',
   },
@@ -781,82 +754,74 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   benefitsList: {
-    marginBottom: 20,
-    paddingHorizontal: 8,
+    marginBottom: Spacing[5],
+    paddingHorizontal: Spacing[2],
   },
   benefitsTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 0.95)',
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
     letterSpacing: 0.5,
+    lineHeight: 24,
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    marginBottom: Spacing[4],
+    paddingVertical: Spacing[2],
+    paddingHorizontal: Spacing[3],
+    backgroundColor: Colors.overlay.light10,
+    borderRadius: 12,
   },
   benefitIconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: Colors.primary[500],
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: Spacing[4],
   },
   benefitText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 15,
+    color: Colors.text.primary,
     fontWeight: '500',
     flex: 1,
     letterSpacing: 0.2,
+    lineHeight: 20,
   },
   bottomContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 16, // Reduced top padding
-    borderTopLeftRadius: 20, // Reduced radius
-    borderTopRightRadius: 20, // Reduced radius
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 10,
+    paddingHorizontal: Spacing[6],
+    paddingTop: Spacing[4],
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    ...Shadows.lg,
   },
   buttonContainer: {
-    marginBottom: 10, // Reduced margin
+    marginBottom: Spacing[3],
   },
   primaryButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primary[500],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14, // Reduced from 18
-    borderRadius: 20, // Reduced from 24
-    marginBottom: 8, // Reduced from 12
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4, // Reduced shadow
-    },
-    shadowOpacity: 0.2, // Reduced shadow opacity
-    shadowRadius: 8, // Reduced shadow radius
-    elevation: 6,
+    paddingVertical: Spacing[4],
+    borderRadius: 20,
+    marginBottom: Spacing[2],
+    ...Shadows.md,
   },
   loadingButton: {
     opacity: 0.8,
   },
   primaryButtonText: {
-    fontSize: 16, // Reduced from 18
-    fontWeight: 'bold',
-    marginLeft: 10, // Reduced from 12
-    letterSpacing: 0.3, // Reduced letter spacing
+    fontSize: 16,
+    fontWeight: '700',
+    marginLeft: Spacing[3],
+    letterSpacing: 0.3,
+    color: Colors.background.primary,
+    lineHeight: 20,
   },
   loadingIndicator: {
     // Additional styles for loading state if needed
@@ -865,28 +830,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12, // Reduced from 16
-    borderRadius: 20, // Reduced from 24
-    borderWidth: 1.5, // Reduced border width
-    borderColor: 'rgba(255, 255, 255, 0.4)',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)', // Slightly more transparent
+    paddingVertical: Spacing[3],
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: Colors.border.secondary,
+    backgroundColor: Colors.overlay.light10,
+    ...Shadows.sm,
   },
   secondaryButtonText: {
-    fontSize: 14, // Reduced from 16
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    color: Colors.text.primary,
     fontWeight: '600',
-    marginLeft: 8, // Reduced from 10
-    letterSpacing: 0.2, // Reduced letter spacing
+    marginLeft: Spacing[2],
+    letterSpacing: 0.2,
+    lineHeight: 18,
   },
   trustIndicators: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingVertical: 8, // Reduced from 12
-    paddingHorizontal: 12, // Reduced from 16
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12, // Reduced from 16
-    marginTop: 4, // Reduced from 8
+    paddingVertical: Spacing[2],
+    paddingHorizontal: Spacing[3],
+    backgroundColor: Colors.overlay.light10,
+    borderRadius: 12,
+    marginTop: Spacing[1],
   },
   trustItem: {
     flexDirection: 'row',
@@ -895,10 +862,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   trustText: {
-    fontSize: 11, // Reduced from 13
-    color: 'rgba(255, 255, 255, 0.7)',
-    marginLeft: 4, // Reduced from 6
+    fontSize: 11,
+    color: Colors.text.secondary,
+    marginLeft: Spacing[1],
     fontWeight: '500',
+    lineHeight: 14,
   },
 })
 

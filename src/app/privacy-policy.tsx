@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const { width, height } = Dimensions.get('window')
 
@@ -78,7 +79,7 @@ const PrivacyPolicyScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='dark-content' backgroundColor='#f8f9fa' />
+      <StatusBar barStyle='light-content' backgroundColor={Colors.background.primary} />
 
       <Animated.View
         style={[
@@ -97,7 +98,7 @@ const PrivacyPolicyScreen = () => {
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconContainer}>
-              <FontAwesome name='shield' size={40} color='#2E8C83' />
+              <FontAwesome name='shield' size={40} color={Colors.primary[500]} />
             </View>
             <Text style={styles.title}>Privacy & Cookies</Text>
             <Text style={styles.subtitle}>
@@ -120,9 +121,9 @@ const PrivacyPolicyScreen = () => {
               <Switch
                 value={settings.personalisedAds}
                 onValueChange={() => toggleSetting('personalisedAds')}
-                trackColor={{ false: '#e0e0e0', true: '#2E8C83' }}
-                thumbColor={settings.personalisedAds ? '#fff' : '#f4f3f4'}
-                ios_backgroundColor='#e0e0e0'
+                trackColor={{ false: Colors.border.secondary, true: Colors.primary[500] }}
+                thumbColor={settings.personalisedAds ? Colors.text.primary : Colors.background.tertiary}
+                ios_backgroundColor={Colors.border.secondary}
               />
             </View>
 
@@ -138,9 +139,9 @@ const PrivacyPolicyScreen = () => {
               <Switch
                 value={settings.strictlyNecessary}
                 onValueChange={() => toggleSetting('strictlyNecessary')}
-                trackColor={{ false: '#e0e0e0', true: '#2E8C83' }}
-                thumbColor='#fff'
-                ios_backgroundColor='#2E8C83'
+                trackColor={{ false: Colors.border.secondary, true: Colors.primary[500] }}
+                thumbColor={Colors.text.primary}
+                ios_backgroundColor={Colors.primary[500]}
                 disabled={true}
               />
             </View>
@@ -157,9 +158,9 @@ const PrivacyPolicyScreen = () => {
               <Switch
                 value={settings.personalisation}
                 onValueChange={() => toggleSetting('personalisation')}
-                trackColor={{ false: '#e0e0e0', true: '#2E8C83' }}
-                thumbColor={settings.personalisation ? '#fff' : '#f4f3f4'}
-                ios_backgroundColor='#e0e0e0'
+                trackColor={{ false: Colors.border.secondary, true: Colors.primary[500] }}
+                thumbColor={settings.personalisation ? Colors.text.primary : Colors.background.tertiary}
+                ios_backgroundColor={Colors.border.secondary}
               />
             </View>
           </View>
@@ -171,7 +172,7 @@ const PrivacyPolicyScreen = () => {
             activeOpacity={0.7}
           >
             <Text style={styles.detailsButtonText}>Details Privacy Policy</Text>
-            <FontAwesome name='chevron-right' size={16} color='#2E8C83' />
+            <FontAwesome name='chevron-right' size={16} color={Colors.primary[500]} />
           </TouchableOpacity>
 
           {/* Additional Info */}
@@ -210,7 +211,7 @@ const PrivacyPolicyScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.background.primary,
   },
   content: {
     flex: 1,
@@ -223,145 +224,124 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    paddingHorizontal: 30,
-    paddingTop: 60,
-    paddingBottom: 30,
+    paddingHorizontal: Spacing[7],
+    paddingTop: Spacing[15],
+    paddingBottom: Spacing[7],
   },
   iconContainer: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(46, 140, 131, 0.1)',
+    backgroundColor: Colors.overlay.light10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1a1a1a',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: Spacing[4],
     letterSpacing: 0.5,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: Colors.text.primary,
     textAlign: 'center',
     lineHeight: 24,
-    paddingHorizontal: 10,
+    paddingHorizontal: Spacing[2],
   },
   settingsContainer: {
-    paddingHorizontal: 30,
-    marginBottom: 20,
+    paddingHorizontal: Spacing[7],
+    marginBottom: Spacing[5],
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 15,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: Spacing[5],
+    marginBottom: Spacing[4],
+    ...Shadows.md,
     borderWidth: 1,
-    borderColor: '#f0f0f0',
+    borderColor: Colors.border.primary,
   },
   settingContent: {
     flex: 1,
-    marginRight: 15,
+    marginRight: Spacing[4],
   },
   settingTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 5,
+    color: Colors.text.primary,
+    marginBottom: Spacing[1],
   },
   settingDescription: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.text.secondary,
     lineHeight: 20,
   },
   detailsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    marginHorizontal: 30,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.background.secondary,
+    marginHorizontal: Spacing[7],
+    paddingVertical: Spacing[4],
+    paddingHorizontal: Spacing[5],
     borderRadius: 15,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    marginBottom: Spacing[5],
+    ...Shadows.md,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: Colors.border.primary,
   },
   detailsButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#2E8C83',
+    color: Colors.primary[500],
   },
   infoContainer: {
-    paddingHorizontal: 30,
-    marginBottom: 20,
+    paddingHorizontal: Spacing[7],
+    marginBottom: Spacing[5],
   },
   infoText: {
     fontSize: 13,
-    color: '#888',
+    color: Colors.text.muted,
     textAlign: 'center',
     lineHeight: 20,
   },
   bottomContainer: {
-    paddingHorizontal: 30,
-    paddingVertical: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: Spacing[7],
+    paddingVertical: Spacing[5],
+    backgroundColor: Colors.background.secondary,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: Colors.border.primary,
   },
   allowAllButton: {
-    backgroundColor: '#2E8C83',
-    paddingVertical: 18,
+    backgroundColor: Colors.primary[500],
+    paddingVertical: Spacing[4],
     borderRadius: 25,
     alignItems: 'center',
-    marginBottom: 12,
-    shadowColor: '#2E8C83',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
+    marginBottom: Spacing[3],
+    ...Shadows.lg,
   },
   allowAllButtonText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 18,
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
   confirmButton: {
     backgroundColor: 'transparent',
-    paddingVertical: 18,
+    paddingVertical: Spacing[4],
     borderRadius: 25,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#2E8C83',
+    borderColor: Colors.primary[500],
   },
   confirmButtonText: {
-    color: '#2E8C83',
+    color: Colors.primary[500],
     fontSize: 18,
     fontWeight: '600',
     letterSpacing: 0.5,

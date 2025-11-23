@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar'
 import { FontAwesome } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useAuth } from '../providers/auth-provider'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const Auth = () => {
   const { mode } = useLocalSearchParams<{ mode?: string }>()
@@ -119,7 +120,7 @@ const Auth = () => {
     <ScrollView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <FontAwesome name='shopping-bag' size={60} color='#2E8C83' />
+          <FontAwesome name='shopping-bag' size={60} color={Colors.primary[500]} />
           <Text style={styles.title}>E-Com Shop</Text>
           <Text style={styles.subtitle}>
             {isLogin ? 'Welcome back!' : 'Create your account'}
@@ -132,7 +133,7 @@ const Auth = () => {
               <FontAwesome
                 name='user'
                 size={20}
-                color='#666'
+                color={Colors.text.secondary}
                 style={styles.inputIcon}
               />
               <TextInput
@@ -149,7 +150,7 @@ const Auth = () => {
             <FontAwesome
               name='envelope'
               size={20}
-              color='#666'
+              color={Colors.text.secondary}
               style={styles.inputIcon}
             />
             <TextInput
@@ -166,7 +167,7 @@ const Auth = () => {
             <FontAwesome
               name='lock'
               size={20}
-              color='#666'
+              color={Colors.text.secondary}
               style={styles.inputIcon}
             />
             <TextInput
@@ -184,7 +185,7 @@ const Auth = () => {
               <FontAwesome
                 name={showPassword ? 'eye-slash' : 'eye'}
                 size={16}
-                color='#999'
+                color={Colors.text.muted}
               />
             </TouchableOpacity>
           </View>
@@ -194,7 +195,7 @@ const Auth = () => {
               <FontAwesome
                 name='lock'
                 size={20}
-                color='#666'
+                color={Colors.text.secondary}
                 style={styles.inputIcon}
               />
               <TextInput
@@ -212,7 +213,7 @@ const Auth = () => {
                 <FontAwesome
                   name={showConfirmPassword ? 'eye-slash' : 'eye'}
                   size={16}
-                  color='#999'
+                  color={Colors.text.muted}
                 />
               </TouchableOpacity>
             </View>
@@ -267,27 +268,27 @@ const Auth = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background.primary,
   },
   content: {
     flex: 1,
-    padding: 20,
+    padding: Spacing[5],
     justifyContent: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing[10],
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#2E8C83',
-    marginTop: 20,
-    marginBottom: 10,
+    color: Colors.primary[500],
+    marginTop: Spacing[5],
+    marginBottom: Spacing[2],
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: Colors.text.secondary,
     textAlign: 'center',
   },
   form: {
@@ -296,33 +297,36 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: Colors.background.secondary,
     borderRadius: 10,
-    marginBottom: 15,
-    paddingHorizontal: 15,
+    marginBottom: Spacing[4],
+    paddingHorizontal: Spacing[4],
+    borderWidth: 1,
+    borderColor: Colors.border.primary,
   },
   inputIcon: {
-    marginRight: 15,
+    marginRight: Spacing[4],
   },
   input: {
     flex: 1,
-    paddingVertical: 15,
+    paddingVertical: Spacing[4],
     fontSize: 16,
-    color: '#333',
+    color: Colors.text.primary,
   },
   eyeIcon: {
-    padding: 5,
+    padding: Spacing[1],
   },
   submitButton: {
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.primary[500],
     borderRadius: 10,
-    paddingVertical: 15,
+    paddingVertical: Spacing[4],
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: Spacing[2],
+    marginBottom: Spacing[5],
+    ...Shadows.md,
   },
   submitButtonDisabled: {
-    backgroundColor: '#a0a0a0',
+    backgroundColor: Colors.text.muted,
   },
   loadingContainer: {
     flexDirection: 'row',
@@ -330,24 +334,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   submitButtonText: {
-    color: '#fff',
+    color: Colors.background.primary,
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: Spacing[2],
   },
   switchButton: {
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: Spacing[4],
   },
   switchButtonText: {
-    color: '#2E8C83',
+    color: Colors.primary[500],
     fontSize: 16,
   },
   forgotButton: {
     alignItems: 'center',
   },
   forgotButtonText: {
-    color: '#999',
+    color: Colors.text.muted,
     fontSize: 14,
   },
 })

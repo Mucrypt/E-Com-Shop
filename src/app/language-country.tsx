@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 interface Country {
   code: string
@@ -55,12 +56,12 @@ const LanguageCountryScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='#2E8C83' />
+      <StatusBar barStyle='light-content' backgroundColor={Colors.primary[500]} />
 
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <FontAwesome name='chevron-left' size={20} color='#fff' />
+          <FontAwesome name='chevron-left' size={20} color={Colors.text.primary} />
         </TouchableOpacity>
 
         <View style={styles.headerContent}>
@@ -115,7 +116,7 @@ const LanguageCountryScreen = () => {
               </View>
 
               {selectedCountry?.code === country.code && (
-                <FontAwesome name='check-circle' size={24} color='#2E8C83' />
+                <FontAwesome name='check-circle' size={24} color={Colors.primary[500]} />
               )}
             </TouchableOpacity>
           ))}
@@ -133,7 +134,7 @@ const LanguageCountryScreen = () => {
             <Text style={styles.continueButtonText}>
               Continue with {selectedCountry.name}
             </Text>
-            <FontAwesome name='chevron-right' size={16} color='#fff' />
+            <FontAwesome name='chevron-right' size={16} color={Colors.background.primary} />
           </TouchableOpacity>
         </View>
       )}
@@ -144,18 +145,18 @@ const LanguageCountryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.primary[500],
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    paddingTop: 10,
+    paddingHorizontal: Spacing[5],
+    paddingVertical: Spacing[5],
+    paddingTop: Spacing[8], // Increased padding to avoid status bar overlap
   },
   backButton: {
-    padding: 8,
-    marginRight: 15,
+    padding: Spacing[2],
+    marginRight: Spacing[4],
   },
   headerContent: {
     flex: 1,
@@ -163,57 +164,49 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
+    color: Colors.background.primary,
+    marginBottom: Spacing[1],
   },
   headerSubtitle: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: Colors.text.secondary,
   },
   content: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: Colors.background.primary,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    paddingTop: 25,
+    paddingTop: Spacing[6],
   },
   instructionText: {
     fontSize: 16,
-    color: '#666',
+    color: Colors.text.secondary,
     textAlign: 'center',
-    marginHorizontal: 30,
-    marginBottom: 30,
+    marginHorizontal: Spacing[7],
+    marginBottom: Spacing[7],
     lineHeight: 24,
   },
   countriesList: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing[5],
     paddingBottom: 100,
   },
   countryItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    marginBottom: 12,
+    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: Spacing[5],
+    paddingVertical: Spacing[4],
+    marginBottom: Spacing[3],
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Shadows.md,
     borderWidth: 2,
     borderColor: 'transparent',
   },
   selectedCountryItem: {
-    borderColor: '#2E8C83',
-    backgroundColor: '#f0fffe',
-    shadowColor: '#2E8C83',
-    shadowOpacity: 0.2,
+    borderColor: Colors.primary[500],
+    backgroundColor: Colors.background.tertiary,
+    ...Shadows.lg,
   },
   countryInfo: {
     flexDirection: 'row',
@@ -222,7 +215,7 @@ const styles = StyleSheet.create({
   },
   flagText: {
     fontSize: 32,
-    marginRight: 16,
+    marginRight: Spacing[4],
   },
   countryDetails: {
     flex: 1,
@@ -230,60 +223,46 @@ const styles = StyleSheet.create({
   countryName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    color: Colors.text.primary,
+    marginBottom: Spacing[1],
   },
   selectedText: {
-    color: '#2E8C83',
+    color: Colors.primary[500],
   },
   languageText: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.text.secondary,
   },
   selectedLanguageText: {
-    color: '#2E8C83',
+    color: Colors.primary[500],
   },
   bottomContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
-    paddingHorizontal: 30,
-    paddingVertical: 20,
-    paddingBottom: 30,
+    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: Spacing[7],
+    paddingVertical: Spacing[5],
+    paddingBottom: Spacing[7],
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -5,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 10,
+    ...Shadows.xl,
   },
   continueButton: {
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.primary[500],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: Spacing[4],
     borderRadius: 25,
-    shadowColor: '#2E8C83',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    ...Shadows.lg,
   },
   continueButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
-    marginRight: 10,
+    color: Colors.background.primary,
+    marginRight: Spacing[2],
   },
 })
 

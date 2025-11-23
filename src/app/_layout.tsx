@@ -9,6 +9,7 @@ import { AppProviders } from '../providers'
 import QueryProvider from '../providers/tanstack-api/query-providers'
 import { useCartStore } from '../store'
 import { SidebarProvider, useSidebar } from '../contexts/SidebarContext'
+import { Colors, Spacing } from '../constants'
 
 const MukulahHeader: React.FC = () => {
   const router = useRouter()
@@ -35,7 +36,7 @@ const MukulahHeader: React.FC = () => {
     <View style={styles.headerContainer}>
       {/* Left: SHEIN-style menu button */}
       <TouchableOpacity style={styles.leftIconButton} onPress={toggle}>
-        <FontAwesome name='bars' size={20} color='#111' />
+        <FontAwesome name='bars' size={20} color={Colors.text.primary} />
       </TouchableOpacity>
 
       {/* Center logo */}
@@ -47,15 +48,15 @@ const MukulahHeader: React.FC = () => {
       <View style={styles.rightIcons}>
         {/* Replace search with profile icon */}
         <TouchableOpacity style={styles.iconButton} onPress={goToProfile}>
-          <FontAwesome name='user' size={20} color='#111' />
+          <FontAwesome name='user' size={20} color={Colors.text.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconButton} onPress={goToFavorites}>
-          <FontAwesome name='heart-o' size={20} color='#111' />
+          <FontAwesome name='heart-o' size={20} color={Colors.text.primary} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cartButton} onPress={goToCart}>
-          <FontAwesome name='shopping-cart' size={20} color='#111' />
+          <FontAwesome name='shopping-cart' size={20} color={Colors.text.primary} />
           {cartCount > 0 && (
             <View style={styles.cartBadge}>
               <Text style={styles.cartBadgeText}>
@@ -97,7 +98,7 @@ export default function RootLayout() {
                 options={{
                     headerShown: true,
                     headerTitle: () => <MukulahHeader />,
-                    headerStyle: { backgroundColor: '#ffffff' },
+                    headerStyle: { backgroundColor: Colors.background.primary },
                     headerTitleAlign: 'center',
                     headerShadowVisible: true,
                     headerBackVisible: false,
@@ -203,12 +204,12 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#ffffff',
+    paddingHorizontal: Spacing[3],
+    paddingVertical: Spacing[2],
+    backgroundColor: Colors.background.primary,
   },
   leftIconButton: {
-    padding: 6,
+    padding: Spacing[1],
   },
   logoContainer: {
     flex: 1,
@@ -218,19 +219,19 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     letterSpacing: 3,
-    color: '#111111',
+    color: Colors.primary[500],
   },
   rightIcons: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconButton: {
-    paddingHorizontal: 6,
-    paddingVertical: 4,
+    paddingHorizontal: Spacing[1],
+    paddingVertical: Spacing[1],
   },
   cartButton: {
-    paddingHorizontal: 6,
-    paddingVertical: 4,
+    paddingHorizontal: Spacing[1],
+    paddingVertical: Spacing[1],
   },
   cartBadge: {
     position: 'absolute',
@@ -239,13 +240,13 @@ const styles = StyleSheet.create({
     minWidth: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#bf0e40ff',
+    backgroundColor: Colors.status.error,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: Spacing[1],
   },
   cartBadgeText: {
-    color: '#fff',
+    color: Colors.text.primary,
     fontSize: 10,
     fontWeight: '700',
   },

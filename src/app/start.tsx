@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const { width, height } = Dimensions.get('window')
 
@@ -50,7 +51,7 @@ const StartScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle='light-content' backgroundColor='#2E8C83' />
+      <StatusBar barStyle='light-content' backgroundColor={Colors.background.primary} />
 
       {/* Background decorative elements */}
       <View style={styles.backgroundPattern}>
@@ -80,21 +81,20 @@ const StartScreen = () => {
         >
           <View style={styles.logoContainer}>
             <View style={styles.logoBackground}>
-              <FontAwesome name='shopping-bag' size={80} color='#fff' />
+              <FontAwesome name='th-large' size={80} color={Colors.background.primary} />
             </View>
             <View style={styles.logoGlow} />
           </View>
 
           <Text style={styles.appName}>Mukulah</Text>
-          <Text style={styles.appSubtitle}>Your Shopping Paradise</Text>
+          <Text style={styles.appSubtitle}>Your All-in-One Platform</Text>
         </Animated.View>
 
         {/* Welcome Section */}
         <View style={styles.welcomeSection}>
           <Text style={styles.welcomeTitle}>Welcome to Mukulah</Text>
           <Text style={styles.welcomeDescription}>
-            Discover amazing products, enjoy seamless shopping experience, and
-            get everything delivered right to your doorstep.
+            Explore, connect, and thrive on our comprehensive platform. Shop, travel, trade crypto, find jobs, book services, discover real estate, and enjoy live sports - all in one place.
           </Text>
         </View>
 
@@ -102,27 +102,27 @@ const StartScreen = () => {
         <View style={styles.featuresContainer}>
           <View style={styles.featureItem}>
             <FontAwesome
-              name='truck'
+              name='users'
               size={20}
-              color='rgba(255, 255, 255, 0.8)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Fast Delivery</Text>
+            <Text style={styles.featureText}>Connect & Share</Text>
           </View>
           <View style={styles.featureItem}>
             <FontAwesome
-              name='shield'
+              name='globe'
               size={20}
-              color='rgba(255, 255, 255, 0.8)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Secure Payment</Text>
+            <Text style={styles.featureText}>All Services</Text>
           </View>
           <View style={styles.featureItem}>
             <FontAwesome
-              name='star'
+              name='line-chart'
               size={20}
-              color='rgba(255, 255, 255, 0.8)'
+              color={Colors.primary[500]}
             />
-            <Text style={styles.featureText}>Quality Products</Text>
+            <Text style={styles.featureText}>Opportunities</Text>
           </View>
         </View>
       </Animated.View>
@@ -143,11 +143,11 @@ const StartScreen = () => {
           onPress={handleStart}
           activeOpacity={0.8}
         >
-          <Text style={styles.startButtonText}>Start Shopping</Text>
+          <Text style={styles.startButtonText}>Get Started</Text>
           <FontAwesome
             name='chevron-right'
             size={16}
-            color='#2E8C83'
+            color='#000000'
             style={styles.startButtonIcon}
           />
         </TouchableOpacity>
@@ -161,7 +161,7 @@ const StartScreen = () => {
           <FontAwesome
             name='globe'
             size={18}
-            color='rgba(255, 255, 255, 0.9)'
+            color={Colors.primary[500]}
             style={styles.languageIcon}
           />
           <Text style={styles.languageButtonText}>
@@ -181,7 +181,7 @@ const StartScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.background.primary,
   },
   backgroundPattern: {
     position: 'absolute',
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   circle: {
     position: 'absolute',
     borderRadius: 999,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.overlay.light10,
   },
   circle1: {
     width: 200,
@@ -215,160 +215,163 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 80,
+    paddingHorizontal: Spacing[8],
+    paddingTop: Spacing[20],
     justifyContent: 'center',
   },
   logoSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing[10],
   },
   logoContainer: {
     position: 'relative',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   logoBackground: {
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: Colors.primary[500],
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 15,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 25,
-    elevation: 15,
+    borderColor: Colors.primary[400],
+    ...Shadows.accentLarge,
   },
   logoGlow: {
     position: 'absolute',
-    top: -15,
-    left: -15,
-    right: -15,
-    bottom: -15,
+    top: -Spacing[4],
+    left: -Spacing[4],
+    right: -Spacing[4],
+    bottom: -Spacing[4],
     borderRadius: 95,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.overlay.light10,
     zIndex: -1,
   },
   appName: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 36,
+    fontWeight: '900',
+    color: Colors.primary[500],
     textAlign: 'center',
-    letterSpacing: 2,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 3 },
-    textShadowRadius: 8,
+    letterSpacing: 1,
+    textShadowColor: Colors.overlay.dark50,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    lineHeight: 42,
   },
   appSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: Colors.text.primary,
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: Spacing[2],
     fontStyle: 'italic',
     letterSpacing: 0.5,
+    lineHeight: 20,
+    opacity: 0.9,
   },
   welcomeSection: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing[10],
   },
   welcomeTitle: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: '#fff',
+    fontSize: 24,
+    fontWeight: '700',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 15,
-    letterSpacing: 1,
+    marginBottom: Spacing[4],
+    letterSpacing: 0.5,
+    lineHeight: 30,
   },
   welcomeDescription: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 15,
+    fontWeight: '400',
+    color: Colors.text.primary,
     textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: 10,
+    lineHeight: 22,
+    paddingHorizontal: Spacing[3],
+    opacity: 0.85,
   },
   featuresContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
+    paddingHorizontal: Spacing[4],
   },
   featureItem: {
     alignItems: 'center',
     flex: 1,
+    padding: Spacing[3],
+    borderRadius: 12,
+    backgroundColor: Colors.overlay.light10,
+    marginHorizontal: Spacing[1],
   },
   featureText: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginTop: 8,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginTop: Spacing[2],
     textAlign: 'center',
-    fontWeight: '500',
+    lineHeight: 16,
   },
   bottomContainer: {
-    paddingHorizontal: 30,
-    paddingBottom: 50,
-    paddingTop: 20,
+    paddingHorizontal: Spacing[8],
+    paddingBottom: Spacing[12],
+    paddingTop: Spacing[5],
   },
   startButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.primary[500],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 30,
+    paddingVertical: Spacing[5],
+    paddingHorizontal: Spacing[8],
     borderRadius: 25,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    marginBottom: Spacing[4],
+    ...Shadows.accentLarge,
   },
   startButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2E8C83',
-    marginRight: 10,
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#000000',
+    marginRight: Spacing[3],
     letterSpacing: 0.5,
+    lineHeight: 20,
   },
   startButtonIcon: {
-    marginLeft: 5,
+    marginLeft: Spacing[1],
   },
   languageButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    paddingVertical: Spacing[4],
+    paddingHorizontal: Spacing[8],
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    marginBottom: 25,
+    borderColor: Colors.border.secondary,
+    backgroundColor: Colors.overlay.light10,
+    marginBottom: Spacing[6],
+    ...Shadows.sm,
   },
   languageIcon: {
-    marginRight: 12,
+    marginRight: Spacing[3],
   },
   languageButtonText: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontWeight: '500',
-    letterSpacing: 0.3,
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    letterSpacing: 0,
+    lineHeight: 18,
   },
   footerText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 11,
+    fontWeight: '400',
+    color: Colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 18,
-    paddingHorizontal: 20,
+    lineHeight: 16,
+    paddingHorizontal: Spacing[5],
+    opacity: 0.8,
   },
 })
 

@@ -10,6 +10,7 @@ import {
 import { router } from 'expo-router'
 import { FontAwesome } from '@expo/vector-icons'
 import { useAuth } from '../providers/auth-provider'
+import { Colors, Typography, Spacing, Shadows } from '../constants'
 
 const { width, height } = Dimensions.get('window')
 
@@ -126,7 +127,7 @@ const SplashScreen = () => {
 
   return (
     <Animated.View style={[styles.container, { opacity: backgroundOpacity }]}>
-      <StatusBar barStyle='light-content' backgroundColor='#2E8C83' />
+      <StatusBar barStyle='light-content' backgroundColor={Colors.background.primary} />
 
       {/* Background gradient effect */}
       <View style={styles.backgroundGradient} />
@@ -149,14 +150,14 @@ const SplashScreen = () => {
           ]}
         >
           <View style={styles.logoCircle}>
-            <FontAwesome name='shopping-bag' size={60} color='#fff' />
+            <FontAwesome name='shopping-bag' size={60} color={Colors.background.primary} />
           </View>
           <View style={styles.logoGlow} />
         </Animated.View>
 
         {/* App name and tagline */}
         <Animated.View style={[styles.textContainer, { opacity: textOpacity }]}>
-          <Text style={styles.appName}>E-Com Shop</Text>
+          <Text style={styles.appName}>Mukulah</Text>
           <Text style={styles.tagline}>Your Shopping Paradise</Text>
 
           {/* Loading indicator */}
@@ -209,7 +210,7 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.background.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#2E8C83',
+    backgroundColor: Colors.background.primary,
     opacity: 0.9,
   },
   floatingElement1: {
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.overlay.light10,
   },
   floatingElement2: {
     position: 'absolute',
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: Colors.overlay.light10,
   },
   floatingElement3: {
     position: 'absolute',
@@ -247,67 +248,64 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 12.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: Colors.overlay.light10,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: Spacing[10],
   },
   logoContainer: {
-    marginBottom: 40,
+    marginBottom: Spacing[10],
     position: 'relative',
   },
   logoCircle: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: Colors.primary[500],
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
+    borderColor: Colors.primary[400],
+    ...Shadows.accentLarge,
   },
   logoGlow: {
     position: 'absolute',
-    top: -10,
-    left: -10,
-    right: -10,
-    bottom: -10,
+    top: -Spacing[3],
+    left: -Spacing[3],
+    right: -Spacing[3],
+    bottom: -Spacing[3],
     borderRadius: 80,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.overlay.light10,
     zIndex: -1,
   },
   textContainer: {
     alignItems: 'center',
   },
   appName: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 38,
+    fontWeight: '900',
+    color: Colors.primary[500],
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: Spacing[2],
     letterSpacing: 1,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowColor: Colors.overlay.dark30,
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5,
+    lineHeight: 44,
   },
   tagline: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: '400',
+    color: Colors.text.primary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing[10],
     fontStyle: 'italic',
     letterSpacing: 0.5,
+    opacity: 0.9,
+    lineHeight: 20,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -316,36 +314,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: Spacing[3],
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    marginHorizontal: 4,
+    backgroundColor: Colors.primary[500],
+    marginHorizontal: Spacing[1],
   },
   loadingText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: Colors.text.secondary,
     fontWeight: '500',
+    lineHeight: 18,
   },
   footer: {
     position: 'absolute',
-    bottom: 60,
+    bottom: Spacing[16],
     alignItems: 'center',
   },
   footerText: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: Colors.text.secondary,
     textAlign: 'center',
     fontStyle: 'italic',
-    marginBottom: 5,
+    marginBottom: Spacing[1],
+    opacity: 0.8,
+    lineHeight: 18,
   },
   versionText: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: Colors.text.muted,
     textAlign: 'center',
+    lineHeight: 16,
   },
 })
 

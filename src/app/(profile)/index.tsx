@@ -81,20 +81,37 @@ const Profile = () => {
     },
   ]
 
-  // If user is not authenticated, show marketing screen (unchanged)
+  // If user is not authenticated, show marketing screen with theme colors
   if (!isAuthenticated) {
     return (
-      <MarketingScreen
-        title='Join Our Family'
-        subtitle='Unlock exclusive benefits and start your shopping journey'
-        data={marketingData}
-        primaryButtonText='Login'
-        secondaryButtonText='Create Account'
-        onPrimaryPress={() => router.push('/auth')}
-        onSecondaryPress={() => router.push('/auth?mode=register')}
-        backgroundColor='#2E8C83'
-        showRegisterOption={true}
-      />
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={Colors.background.primary} />
+        
+        {/* Close/Back Button */}
+        <View style={styles.marketingHeader}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => router.push('/(main)/')}
+            activeOpacity={0.7}
+          >
+            <FontAwesome name='times' size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.marketingContent}>
+          <MarketingScreen
+            title='Join Our Family'
+            subtitle='Unlock exclusive benefits and start your shopping journey'
+            data={marketingData}
+            primaryButtonText='Login'
+            secondaryButtonText='Create Account'
+            onPrimaryPress={() => router.push('/auth')}
+            onSecondaryPress={() => router.push('/auth?mode=register')}
+            backgroundColor={Colors.background.primary}
+            showRegisterOption={true}
+          />
+        </View>
+      </View>
     )
   }
 
@@ -593,7 +610,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.bold,
+    fontWeight: 'bold',
     color: Colors.primary[500],
   },
   editAvatarBtn: {
@@ -611,7 +628,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: Typography.sizes.xl,
-    fontWeight: Typography.weights.bold,
+    fontWeight: 'bold',
     color: Colors.text.primary,
     marginBottom: Spacing[1], // 4px
   },
@@ -633,7 +650,7 @@ const styles = StyleSheet.create({
   },
   membershipText: {
     fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: '600',
     color: Colors.primary[500],
     marginLeft: Spacing[1], // 4px
   },
@@ -649,7 +666,7 @@ const styles = StyleSheet.create({
   publicProfileText: {
     marginLeft: Spacing[2], // 8px
     fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: '600',
     color: Colors.background.primary,
   },
   statsContainer: {
@@ -668,7 +685,7 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.bold,
+    fontWeight: 'bold',
     color: Colors.primary[500],
     marginBottom: Spacing[1], // 4px
   },
@@ -682,7 +699,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: Typography.sizes.lg,
-    fontWeight: Typography.weights.bold,
+    fontWeight: 'bold',
     color: Colors.text.primary,
     marginBottom: Spacing[3], // 12px
   },
@@ -736,9 +753,32 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: Typography.sizes.md,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: '600',
     color: Colors.text.primary,
     marginLeft: Spacing[3], // 12px
+  },
+  marketingHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingTop: Spacing[12], // Status bar height + padding
+    paddingHorizontal: Spacing[5],
+    paddingBottom: Spacing[3],
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.overlay.dark30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  marketingContent: {
+    flex: 1,
+    paddingTop: Spacing[16], // Extra space to avoid status bar overlap
   },
 
 })
