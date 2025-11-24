@@ -89,6 +89,12 @@ const featureItems: MainFeatureItem[] = [
     onPress: () => router.push('/(crypto-hub)'),
   },
   {
+    key: 'social',
+    label: 'Social Feed',
+    icon: 'users',
+    onPress: () => router.push('/(social)'),
+  },
+  {
     key: 'more',
     label: 'More',
     icon: 'ellipsis-h',

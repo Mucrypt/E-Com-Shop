@@ -344,9 +344,17 @@ const PeopleDiscoveryScreen: React.FC = () => {
           <FontAwesome name="arrow-left" size={20} color={Colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Discover People</Text>
-        <TouchableOpacity style={styles.searchButton}>
-          <FontAwesome name="search" size={20} color={Colors.text.primary} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            style={styles.connectionsButton}
+            onPress={() => router.push('/screens/connections')}
+          >
+            <FontAwesome name="group" size={16} color={Colors.primary[500]} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.searchButton}>
+            <FontAwesome name="search" size={20} color={Colors.text.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search Bar */}
@@ -665,6 +673,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.background.primary,
     marginLeft: Spacing[1],
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[2],
+  },
+  connectionsButton: {
+    backgroundColor: Colors.background.tertiary,
+    padding: Spacing[2],
+    borderRadius: 20,
   },
 })
 

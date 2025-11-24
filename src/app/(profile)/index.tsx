@@ -196,6 +196,20 @@ const handleMenuPress = (item: string) => {
       router.push('/(profile)/following')
       break
 
+    // Pulse Management Cases
+    case 'pulse-content':
+      Alert.alert('My Pulse Content', 'This would show your Pulse posts, drafts, and analytics.')
+      break
+    case 'pulse-analytics':
+      Alert.alert('Pulse Analytics', 'This would show engagement metrics, reach, and performance data.')
+      break
+    case 'pulse-privacy':
+      Alert.alert('Pulse Privacy', 'This would manage who can see your Pulse content and interaction settings.')
+      break
+    case 'content-moderation':
+      Alert.alert('Content Moderation', 'This would manage blocked users, content filters, and reporting.')
+      break
+
     case 'logout':
       handleLogout()
       break
@@ -280,23 +294,29 @@ const handleMenuPress = (item: string) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.statItem}
-              onPress={() => handleMenuPress('wishlist')}
+              onPress={() => handleMenuPress('pulse-content')}
             >
-              <Text style={styles.statNumber}>{userStats.wishlist}</Text>
+              <Text style={styles.statNumber}>24</Text>
               <Text style={styles.statLabel}>
-                Wishlist
+                Pulse Posts
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.statItem}>
-              <Text style={styles.statNumber}>{userStats.reviews}</Text>
+            <TouchableOpacity
+              style={styles.statItem}
+              onPress={() => handleMenuPress('followers')}
+            >
+              <Text style={styles.statNumber}>1.2K</Text>
               <Text style={styles.statLabel}>
-                Reviews
+                Followers
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.statItem}>
-              <Text style={styles.statNumber}>{userStats.loyaltyPoints}</Text>
+            <TouchableOpacity
+              style={styles.statItem}
+              onPress={() => handleMenuPress('following')}
+            >
+              <Text style={styles.statNumber}>365</Text>
               <Text style={styles.statLabel}>
-                Points
+                Following
               </Text>
             </TouchableOpacity>
           </View>
@@ -336,11 +356,11 @@ const handleMenuPress = (item: string) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.quickActionItem}
-                onPress={() => router.push('/(shop)/shop')}
+                onPress={() => router.push('/(social)/media')}
               >
-                <FontAwesome name='shopping-bag' size={24} color={Colors.primary[500]} />
+                <FontAwesome name='bolt' size={24} color='#FFD700' />
                 <Text style={styles.quickActionText}>
-                  Shop
+                  Pulse Feed
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -362,6 +382,57 @@ const handleMenuPress = (item: string) => {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+
+          {/* Pulse Management */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              Pulse Management
+            </Text>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleMenuPress('pulse-content')}
+            >
+              <FontAwesome name='bolt' size={20} color='#FFD700' />
+              <Text style={styles.menuText}>
+                My Pulse Content
+              </Text>
+              <FontAwesome name='chevron-right' size={16} color={Colors.text.muted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleMenuPress('pulse-analytics')}
+            >
+              <FontAwesome name='bar-chart' size={20} color='#4ECDC4' />
+              <Text style={styles.menuText}>
+                Pulse Analytics
+              </Text>
+              <FontAwesome name='chevron-right' size={16} color={Colors.text.muted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleMenuPress('pulse-privacy')}
+            >
+              <FontAwesome name='eye-slash' size={20} color='#9C27B0' />
+              <Text style={styles.menuText}>
+                Pulse Privacy Settings
+              </Text>
+              <FontAwesome name='chevron-right' size={16} color={Colors.text.muted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => handleMenuPress('content-moderation')}
+            >
+              <FontAwesome name='shield' size={20} color='#FF6B6B' />
+              <Text style={styles.menuText}>
+                Content Moderation
+              </Text>
+              <FontAwesome name='chevron-right' size={16} color={Colors.text.muted} />
+            </TouchableOpacity>
           </View>
 
           {/* Account Settings */}

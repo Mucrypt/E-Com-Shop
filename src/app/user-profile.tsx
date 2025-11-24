@@ -59,14 +59,307 @@ interface UserProfile {
   }[]
 }
 
+// Generate category-specific posts for Pulse creators
+const generateCategoryPosts = (category: string, creatorName: string): UserPost[] => {
+  const baseTimestamps = ['2h ago', '6h ago', '1d ago', '2d ago', '3d ago']
+  
+  switch (category.toLowerCase()) {
+    case 'crypto':
+    case 'crypto trader':
+      return [
+        {
+          id: '1',
+          type: 'trade' as const,
+          content: `🚀 Just executed a perfect swing trade on ETH! The technical analysis was spot on. Up 15% in 24 hours. Always DYOR but the momentum is building!`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 234, comments: 45, shares: 12 },
+          category: 'Crypto Trading',
+          media: '📈',
+        },
+        {
+          id: '2',
+          type: 'achievement' as const,
+          content: `🏆 Milestone alert! Just reached 50K followers! Thank you all for trusting my crypto insights. Here's to more profitable trades together!`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 892, comments: 156, shares: 89 },
+          category: 'Milestone',
+          media: '🎉',
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          content: `Pro tip: Never invest more than you can afford to lose. Risk management is what separates successful traders from gamblers. Stay smart! 💎`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 567, comments: 78, shares: 34 },
+          category: 'Trading Tips',
+        },
+      ]
+    
+    case 'travel':
+    case 'travel blogger':
+      return [
+        {
+          id: '1',
+          type: 'image' as const,
+          content: `🌍 Just landed in Bali! The sunrise over Mount Batur was absolutely breathtaking. Sometimes you need to travel to find yourself. #Wanderlust`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 445, comments: 67, shares: 23 },
+          category: 'Travel Adventures',
+          media: '🌅',
+        },
+        {
+          id: '2',
+          type: 'text' as const,
+          content: `Travel hack: Book flights on Tuesday evenings for the best deals! I've saved thousands using this simple trick. Where's your next destination? ✈️`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 312, comments: 89, shares: 45 },
+          category: 'Travel Tips',
+        },
+        {
+          id: '3',
+          type: 'achievement' as const,
+          content: `🎯 Goal achieved! Just visited my 50th country! From backpacking through Europe to safari in Africa - what an incredible journey it's been!`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 678, comments: 123, shares: 56 },
+          category: 'Milestone',
+          media: '🗺️',
+        },
+      ]
+    
+    case 'jobs':
+    case 'career coach':
+      return [
+        {
+          id: '1',
+          type: 'text' as const,
+          content: `🎯 Job search tip: Tailor your resume for each application! Generic resumes get lost in the pile. Highlight relevant skills that match the job description.`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 189, comments: 34, shares: 28 },
+          category: 'Career Advice',
+        },
+        {
+          id: '2',
+          type: 'achievement' as const,
+          content: `🔥 Success story: Just helped my 100th client land their dream job! Nothing beats seeing people achieve their career goals. Keep pushing forward! 💪`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 456, comments: 78, shares: 23 },
+          category: 'Success Story',
+          media: '🎊',
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          content: `Remote work is here to stay! 67% of companies now offer hybrid options. Adapt your skills, embrace technology, and stay competitive in 2024.`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 234, comments: 45, shares: 19 },
+          category: 'Industry Insights',
+        },
+      ]
+    
+    case 'real-estate':
+    case 'real estate':
+      return [
+        {
+          id: '1',
+          type: 'image' as const,
+          content: `🏡 Just closed on this stunning 4BR home in the best neighborhood! My clients are over the moon. Location, location, location - it never gets old!`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 345, comments: 56, shares: 17 },
+          category: 'Property Success',
+          media: '🏠',
+        },
+        {
+          id: '2',
+          type: 'text' as const,
+          content: `Market update: Interest rates are stabilizing, making it a great time for first-time buyers. Don't wait - the right property won't last long! 📊`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 278, comments: 42, shares: 21 },
+          category: 'Market Analysis',
+        },
+        {
+          id: '3',
+          type: 'achievement' as const,
+          content: `🎉 Milestone achieved! $10M in sales this quarter! Thank you to all my amazing clients who trusted me with their biggest investment.`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 567, comments: 89, shares: 34 },
+          category: 'Sales Milestone',
+          media: '💰',
+        },
+      ]
+    
+    case 'sports':
+    case 'fitness':
+      return [
+        {
+          id: '1',
+          type: 'video' as const,
+          content: `💪 New workout drop! This 15-minute HIIT routine will torch calories and build lean muscle. No equipment needed - just bring the energy! 🔥`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 678, comments: 123, shares: 67 },
+          category: 'Workout Routine',
+          media: '🏋️‍♂️',
+        },
+        {
+          id: '2',
+          type: 'achievement' as const,
+          content: `🏆 Competition update: Just won first place at the regional bodybuilding championship! Hard work, dedication, and consistency pays off!`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 892, comments: 156, shares: 78 },
+          category: 'Competition Win',
+          media: '🥇',
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          content: `Nutrition tip: Protein within 30 minutes post-workout helps maximize muscle recovery. Your body is a temple - fuel it right! 🥗`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 445, comments: 67, shares: 29 },
+          category: 'Nutrition Tips',
+        },
+      ]
+    
+    case 'services':
+    case 'business':
+      return [
+        {
+          id: '1',
+          type: 'text' as const,
+          content: `🚀 Business tip: Customer retention is 5x cheaper than acquisition. Focus on delivering exceptional value to your existing clients first!`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 234, comments: 45, shares: 23 },
+          category: 'Business Strategy',
+        },
+        {
+          id: '2',
+          type: 'achievement' as const,
+          content: `🎯 Major milestone: Just helped my 500th small business streamline their operations! Efficiency is the key to sustainable growth.`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 456, comments: 78, shares: 34 },
+          category: 'Client Success',
+          media: '📊',
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          content: `Automation is not the enemy - it's your biggest ally! Free up time for strategic thinking by automating repetitive tasks. Work smarter! 🤖`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 312, comments: 56, shares: 19 },
+          category: 'Productivity Tips',
+        },
+      ]
+    
+    case 'shopping':
+    case 'fashion':
+      return [
+        {
+          id: '1',
+          type: 'image' as const,
+          content: `✨ Outfit of the day! Mixing vintage with modern pieces for that perfect street style look. Fashion is about expressing your unique self! 👗`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 789, comments: 134, shares: 67 },
+          category: 'Style Inspiration',
+          media: '👔',
+        },
+        {
+          id: '2',
+          type: 'text' as const,
+          content: `Shopping hack: Invest in quality basics that never go out of style. A good white shirt, perfect jeans, and classic shoes are timeless! 🛍️`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 456, comments: 89, shares: 45 },
+          category: 'Fashion Tips',
+        },
+        {
+          id: '3',
+          type: 'achievement' as const,
+          content: `🎉 Exciting news! Just partnered with 3 sustainable fashion brands to promote eco-friendly style choices. Fashion can be both beautiful and responsible!`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 623, comments: 98, shares: 52 },
+          category: 'Brand Partnership',
+          media: '🌱',
+        },
+      ]
+    
+    default:
+      return [
+        {
+          id: '1',
+          type: 'text' as const,
+          content: `🌟 Creating content that matters! Every day is an opportunity to inspire, educate, and connect with amazing people like you. What's your story?`,
+          timestamp: baseTimestamps[0],
+          engagement: { likes: 345, comments: 67, shares: 23 },
+          category: 'Inspiration',
+        },
+        {
+          id: '2',
+          type: 'achievement' as const,
+          content: `🚀 Growth milestone: Just hit 25K engaged followers! Thank you for being part of this incredible journey. The best is yet to come!`,
+          timestamp: baseTimestamps[1],
+          engagement: { likes: 567, comments: 89, shares: 34 },
+          category: 'Community Growth',
+          media: '🎊',
+        },
+        {
+          id: '3',
+          type: 'text' as const,
+          content: `Behind the scenes: Building a personal brand takes consistency, authenticity, and genuine care for your audience. Keep showing up! 💪`,
+          timestamp: baseTimestamps[2],
+          engagement: { likes: 234, comments: 45, shares: 18 },
+          category: 'Creator Tips',
+        },
+      ]
+  }
+}
+
 // Mock user data - in real app this would come from API based on user ID
-const mockUserProfile: UserProfile = {
-  id: '1',
-  name: 'Alex Rodriguez',
-  username: '@alexcrypto',
-  avatar: '👨‍💼',
-  verified: true,
-  category: 'Crypto Trader',
+const getProfileFromParams = (params: any) => {
+  // If we have URL params from Pulse navigation, use them
+  if (params.name) {
+    return {
+      id: params.userId || '1',
+      name: params.name,
+      username: params.username || '@user',
+      avatar: params.avatar || '👤',
+      verified: params.verified === 'true',
+      category: params.category || 'Creator',
+      bio: `Professional ${params.category || 'creator'} sharing insights and building community. Follow for the latest updates and exclusive content.`,
+      location: 'Global',
+      joinDate: 'Joined 2023',
+      stats: {
+        followers: '12.5K',
+        following: '892',
+        posts: '1.3K',
+      },
+      isOnline: true,
+      coverImage: '🌟',
+      badges: [`${params.credibility || 90}% Credibility`, 'Verified Creator', 'Community Member'],
+      recentActivity: 'Active now',
+      mutualConnections: Math.floor(Math.random() * 50),
+      posts: generateCategoryPosts(params.category || 'Creator', params.name), // Dynamic posts based on creator category
+      achievements: [
+        {
+          title: 'Top Creator',
+          description: `Recognized for outstanding content in ${params.category || 'their field'}`,
+          date: 'Nov 2024',
+          icon: '🏆',
+        },
+        {
+          title: 'Community Leader',
+          description: 'Building and engaging with amazing community',
+          date: 'Oct 2024',
+          icon: '👑',
+        },
+      ],
+    }
+  }
+  
+  // Default mock profile
+  return {
+    id: '1',
+    name: 'Alex Rodriguez',
+    username: '@alexcrypto',
+    avatar: '👨‍💼',
+    verified: true,
+    category: 'Crypto Trader',
   bio: 'Professional crypto trader sharing daily insights and market analysis. Building wealth through DeFi and sharing knowledge with the community.',
   location: 'Miami, FL',
   joinDate: 'Joined March 2023',
@@ -83,7 +376,7 @@ const mockUserProfile: UserProfile = {
   posts: [
     {
       id: '1',
-      type: 'trade',
+      type: 'trade' as const,
       content: 'Just closed a massive BTC position! 📈 The technical analysis was spot on. Sharing my strategy in the comments below for anyone interested in learning.',
       timestamp: '2h ago',
       engagement: { likes: 342, comments: 28, shares: 15 },
@@ -92,7 +385,7 @@ const mockUserProfile: UserProfile = {
     },
     {
       id: '2',
-      type: 'text',
+      type: 'text' as const,
       content: 'Market update: Seeing strong bullish signals across DeFi tokens. DYOR but the momentum is building. What are your thoughts on the current market conditions?',
       timestamp: '5h ago',
       engagement: { likes: 189, comments: 45, shares: 8 },
@@ -100,7 +393,7 @@ const mockUserProfile: UserProfile = {
     },
     {
       id: '3',
-      type: 'achievement',
+      type: 'achievement' as const,
       content: 'Excited to announce I\'ve reached 45K followers! Thank you all for the support. Here\'s to building wealth together in the crypto space! 🚀',
       timestamp: '1d ago',
       engagement: { likes: 892, comments: 156, shares: 67 },
@@ -109,7 +402,7 @@ const mockUserProfile: UserProfile = {
     },
     {
       id: '4',
-      type: 'image',
+      type: 'image' as const,
       content: 'Setup tour! My trading desk where the magic happens. Clean setup leads to clear thinking. What does your workspace look like?',
       timestamp: '2d ago',
       engagement: { likes: 234, comments: 67, shares: 23 },
@@ -118,7 +411,7 @@ const mockUserProfile: UserProfile = {
     },
     {
       id: '5',
-      type: 'text',
+      type: 'text' as const,
       content: 'Pro tip: Always set stop losses, even in a bull market. Risk management is what separates successful traders from gamblers. Protect your capital!',
       timestamp: '3d ago',
       engagement: { likes: 456, comments: 89, shares: 34 },
@@ -145,6 +438,7 @@ const mockUserProfile: UserProfile = {
       icon: '👑',
     },
   ],
+  }
 }
 
 const UserProfileScreen: React.FC = () => {
@@ -155,7 +449,7 @@ const UserProfileScreen: React.FC = () => {
   const headerOpacity = useRef(new Animated.Value(0)).current
 
   // In real app, you'd fetch user data based on params.userId
-  const userProfile = mockUserProfile
+  const userProfile = getProfileFromParams(params)
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -320,9 +614,17 @@ const UserProfileScreen: React.FC = () => {
           <FontAwesome name="arrow-left" size={20} color={Colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.stickyHeaderTitle}>{userProfile.name}</Text>
-        <TouchableOpacity style={styles.moreButton}>
-          <FontAwesome name="ellipsis-h" size={20} color={Colors.text.primary} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            style={styles.connectionsButton}
+            onPress={() => router.push('/screens/connections')}
+          >
+            <FontAwesome name="group" size={18} color={Colors.text.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.moreButton}>
+            <FontAwesome name="ellipsis-h" size={20} color={Colors.text.primary} />
+          </TouchableOpacity>
+        </View>
       </Animated.View>
 
       <Animated.ScrollView
@@ -810,6 +1112,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.text.muted,
     fontWeight: '500',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[2],
+  },
+  connectionsButton: {
+    padding: Spacing[1],
   },
 })
 

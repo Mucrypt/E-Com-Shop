@@ -221,13 +221,22 @@ const SocialDiscovery: React.FC = () => {
           <FontAwesome name="users" size={20} color={Colors.primary[500]} />
           <Text style={styles.title}>Discover People</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.seeAllButton}
-          onPress={() => router.push('/screens/people-discovery')}
-        >
-          <Text style={styles.seeAllText}>See All</Text>
-          <FontAwesome name="chevron-right" size={12} color={Colors.primary[500]} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            style={styles.connectionsButton}
+            onPress={() => router.push('/screens/connections')}
+          >
+            <FontAwesome name="group" size={14} color={Colors.primary[500]} />
+            <Text style={styles.connectionsText}>Connections</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.seeAllButton}
+            onPress={() => router.push('/screens/people-discovery')}
+          >
+            <Text style={styles.seeAllText}>See All</Text>
+            <FontAwesome name="chevron-right" size={12} color={Colors.primary[500]} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.cardContainer}>
@@ -654,6 +663,25 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
     marginLeft: Spacing[1],
     fontWeight: '500',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[2],
+  },
+  connectionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background.tertiary,
+    paddingHorizontal: Spacing[2],
+    paddingVertical: Spacing[1],
+    borderRadius: 12,
+    gap: Spacing[1],
+  },
+  connectionsText: {
+    fontSize: 11,
+    color: Colors.primary[500],
+    fontWeight: '600',
   },
 })
 

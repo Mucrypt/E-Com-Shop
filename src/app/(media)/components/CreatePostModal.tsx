@@ -21,6 +21,7 @@ import NetInfo from '@react-native-community/netinfo'
 interface CreatePostModalProps {
   visible: boolean
   onClose: () => void
+  onOpenLiveStream?: () => void
 }
 
 // Add the getMimeType helper function outside the component
@@ -41,6 +42,7 @@ const getMimeType = (extension: string): string => {
 const CreatePostModal: React.FC<CreatePostModalProps> = ({
   visible,
   onClose,
+  onOpenLiveStream,
 }) => {
   const [newPostCaption, setNewPostCaption] = useState('')
   const [newPostType, setNewPostType] = useState<'video' | 'image'>('image')
@@ -317,6 +319,33 @@ const checkNetworkStatus = async (): Promise<boolean> => {
         </View>
 
         <ScrollView style={styles.createContent}>
+          {/* Create Type Selector */}
+          <View style={styles.createTypeSelector}>
+            <TouchableOpacity style={styles.createTypeButton}>
+              <View style={styles.createTypeButtonContent}>
+                <Feather name="edit-3" size={24} color="#2E8C83" />
+                <Text style={styles.createTypeButtonText}>Create Post</Text>
+                <Text style={styles.createTypeButtonSubtext}>Share photos, videos and thoughts</Text>
+              </View>
+            </TouchableOpacity>
+            
+            {onOpenLiveStream && (
+              <TouchableOpacity 
+                style={styles.createTypeButton}
+                onPress={() => {
+                  onClose()
+                  onOpenLiveStream()
+                }}
+              >
+                <View style={styles.createTypeButtonContent}>
+                  <Feather name="video" size={24} color="#FF375F" />
+                  <Text style={[styles.createTypeButtonText, { color: '#FF375F' }]}>Go Live</Text>
+                  <Text style={styles.createTypeButtonSubtext}>Start a live stream</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+
           <View style={styles.creatorRow}>
             <Image
               source={{
@@ -485,6 +514,34 @@ const styles = StyleSheet.create({
   createContent: {
     flex: 1,
     padding: 16,
+  },
+  createTypeSelector: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    gap: 12,
+  },
+  createTypeButton: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  createTypeButtonContent: {
+    alignItems: 'center',
+  },
+  createTypeButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2E8C83',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  createTypeButtonSubtext: {
+    fontSize: 12,
+    color: '#6c757d',
+    textAlign: 'center',
   },
   creatorRow: {
     flexDirection: 'row',
